@@ -3,8 +3,6 @@
 
 random_device rd; // obtain a random number from hardware
 mt19937 eng(rd()); // seed the generator
-uniform_int_distribution<> distr(-1*(num_rings+0.99999999), num_rings+0.99999999); // define the range
-uniform_int_distribution<> distr2(0, num_rings+0.99999999); // define the range
 
 player::player(){
 
@@ -18,11 +16,12 @@ player::player(int numr, int idd, int tl){
 	board_size = 2*numr+1;
 }
 
-void player::make_next_move(vector<vector<pair<int,int>>> board, vector<int> moves){
+void player::make_next_move(vector<vector<pos>> board, vector<int> moves){
 	if(num_rings_placed < num_rings){
-		place_rings(board, moves, num_rings);
+		place_rings(board, moves);
 		num_rings_placed++;
 	}else{
+		uniform_int_distribution<> distr2(0, num_rings+0.99999999); // define the range
 		int ring = distr2(eng);
 		pair<int,int> coords = board_to_my_coord(ring_pos[ring].first, ring_pos[ring].second, num_rings);
 		vector<pair<int,pair<int,int>>> all_valid_moves;
@@ -35,7 +34,7 @@ void player::make_next_move(vector<vector<pair<int,int>>> board, vector<int> mov
 				moves.push_back(coords.first);
 				moves.push_back(coords.second);
 			
-				coords = board_to_my_coord((all_valid_moves[index].second).first, (ring_pos[ring].second).second, num_rings);
+				coords = board_to_my_coord((all_valid_moves[index].second).first, (all_valid_moves[index].second).second, num_rings);
 				moves.push_back(coords.first);
 				moves.push_back(coords.second);
 			}else if(all_valid_moves[index].first == 2){
@@ -43,7 +42,7 @@ void player::make_next_move(vector<vector<pair<int,int>>> board, vector<int> mov
 				moves.push_back(coords.first);
 				moves.push_back(coords.second);
 
-				coords = board_to_my_coord((all_valid_moves[index].second).first, (ring_pos[ring].second).second, num_rings);
+				coords = board_to_my_coord((all_valid_moves[index].second).first, (all_valid_moves[index].second).second, num_rings);
 				moves.push_back(coords.first);
 				moves.push_back(coords.second);
 
@@ -66,7 +65,8 @@ void player::make_next_move(vector<vector<pair<int,int>>> board, vector<int> mov
 	}
 }
 
-void player::place_rings(vector<vector<pair<int,int>>> board, vector<int> moves){
+void player::place_rings(vector<vector<pos>> board, vector<int> moves){
+	uniform_int_distribution<> distr(-1*(num_rings+0.99999999), num_rings+0.99999999); // define the range
 	int x = distr(eng);
 	int y = distr(eng);
 	pair<int,int> coords = my_coord_to_board(x,y,num_rings);
@@ -77,11 +77,11 @@ void player::place_rings(vector<vector<pair<int,int>>> board, vector<int> moves)
 		moves.push_back(y);
 		ring_pos.push_back(make_pair(coords.first, coords.second));
 	}else{
-		place_rings(board, moves, num_rings);
+		place_rings(board, moves);
 	}
 }
 
-void get_valid_moves(vector<vector<pair<int,int>>> board, vector<pair<int,pair<int,int>>> all_valid_moves, int ring_index){
+void player::get_valid_moves(vector<vector<pos>> board, vector<pair<int,pair<int,int>>> all_valid_moves, int ring_index){
 	int init_x = ring_pos[ring_index].first;
 	int init_y = ring_pos[ring_index].second;
 	bool trail = false; // Variable that is true at marker positions
@@ -144,13 +144,13 @@ void get_valid_moves(vector<vector<pair<int,int>>> board, vector<pair<int,pair<i
 			}else{
 				if(trail){
 					if(stretched){
-						all_valid_moves = make_pair(2, make_pair(init_x, init_y));
+						all_valid_moves.push_back(make_pair(2, make_pair(init_x, init_y)));
 					}else{
-						all_valid_moves = make_pair(1, make_pair(init_x, init_y));						
+						all_valid_moves.push_back(make_pair(1, make_pair(init_x, init_y)));						
 					}
 					break;
 				}else{
-					all_valid_moves = make_pair(1,make_pair(init_x, init_y));
+					all_valid_moves.push_back(make_pair(1,make_pair(init_x, init_y)));
 				}
 			}
 		}

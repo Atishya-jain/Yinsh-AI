@@ -60,9 +60,9 @@ void game::initialize_board(){
 
 void game::play(){
 	vector<int> moves;
-	my_player.make_next_move(board, moves, num_rings);
+	my_player.make_next_move(board, moves);
 	if(moves[0] == 0){
-		update_board(0, moves[1], moves[2]);
+		update_board(0, moves[1], moves[2], max_lim, max_lim);
 	}else if(moves[0] == 1){
 		update_board(1, moves[1], moves[2], moves[3], moves[4]);
 	}else{
@@ -75,7 +75,7 @@ void game::play(){
 pair<int, int> game::my_coord_to_yinsh(int x, int y){
 	int h,p;
 	if(x*y<0){
-		h = abs(x)+abs(y)
+		h = abs(x)+abs(y);
 	}else{
 		if (x>y){
 			h = x;
@@ -87,14 +87,13 @@ pair<int, int> game::my_coord_to_yinsh(int x, int y){
 	if(x>=0 && y>=0)
 		p = x - y + h;
 	else if(y<=0 && x<=0)
-		p = y - x + 4*h
+		p = y - x + 4*h;
 	else if(x>0 and y<0)
 		p = 2*h - y;
 	else
 		p = 5*h + y;
 
-	pair <int, int> v = make_pair(h,p);
-	return v;
+	return make_pair(h,p);
 
 }
 pair<int, int> game::yinsh_coord_to_my(int ring, int pos){
@@ -103,7 +102,7 @@ pair<int, int> game::yinsh_coord_to_my(int ring, int pos){
 		y = ring;
 	else if(pos>=3*ring && pos<=4*ring)
 		y = -1*ring;
-	else if(p>h && p<3*h)
+	else if(pos>ring && pos<3*ring)
 		y = 2*ring - pos;
 	else
 		y = pos - 5*ring;
@@ -112,20 +111,19 @@ pair<int, int> game::yinsh_coord_to_my(int ring, int pos){
 		x = ring;
 	else if(pos>=4*ring && pos<=5*ring)
 		x = -1*ring;
-	else if(p>2*h && p<4*h)
+	else if(pos>2*ring && pos<4*ring)
 		x = 3*ring - pos;
 	else{
 		if (pos<ring)
 			x = pos;
 		else
-			x = pos - 6*h;
+			x = pos - 6*ring;
 	}
-	pair <int, int> v = make_pair(x,y);
-	return v;
+	return make_pair(x,y);
 
 }
 
-void game::update_board(int action_on_ring, int initial_x, int initial_y, final_x, final_y){
+void game::update_board(int action_on_ring, int initial_x, int initial_y, int final_x, int final_y){
 	pair <int, int> coords = my_coord_to_board(initial_x, initial_y, num_rings);
 	pair <int, int> coords1 = my_coord_to_board(final_x, final_y, num_rings);
 	
@@ -147,26 +145,26 @@ void game::flip_markers(int x1, int y1, int x2, int y2){
 	int startX,startY,endX,endY;
 
 	if(x1 == x2){
-		startY = min(coords.second, coords1.second);
-		endY = max(coords.second, coords1.second);
+		startY = min(y1, y2);
+		endY = max(y1, y2);
 		for(int i = startY+1; i< endY; i++){
 			if(board[x1][i].marker != 2){
 				board[x1][i].set(1-board[x1][i].marker,false);
 			}
 		}
 	}else if(y1 == y2){
-		startX = min(coords.first, coords1.first);
-		endX = max(coords.first, coords1.first);
+		startX = min(x1, x2);
+		endX = max(x1, x2);
 		for(int i = startX+1; i< endX; i++){
 			if(board[i][y1].marker != 2){
 				board[i][y1].set(1-board[i][y1].marker,false);
 			}
 		}		
 	}else{
-		startX = min(coords.first, coords1.first);
-		startY = min(coords.second, coords1.second);
-		endX = max(coords.first, coords1.first);
-		endY = max(coords.second, coords1.second);
+		startX = min(x1, x2);
+		startY = min(y1, y2);
+		endX = max(x1, x2);
+		endY = max(y1, y2);
 		for(int i = startX+1, j=startY+1; i< endX && j<endY ; i++,j++){
 			if(board[i][j].marker != 2){
 				board[i][j].set(1-board[i][j].marker,false);
@@ -174,26 +172,26 @@ void game::flip_markers(int x1, int y1, int x2, int y2){
 		}
 	}	
 }
-void game::remove_markers(int start_x, int start_y, int end_x, int end_y){
+void game::remove_markers(int x1, int y1, int x2, int y2){
 int startX,startY,endX,endY;
 
 	if(x1 == x2){
-		startY = min(coords.second, coords1.second);
-		endY = max(coords.second, coords1.second);
+		startY = min(y1, y2);
+		endY = max(y1, y2);
 		for(int i = startY+1; i< endY; i++){
 			board[x1][i].set(0,false);
 		}
 	}else if(y1 == y2){
-		startX = min(coords.first, coords1.first);
-		endX = max(coords.first, coords1.first);
+		startX = min(x1, x2);
+		endX = max(x1, x2);
 		for(int i = startX+1; i< endX; i++){
 			board[i][y1].set(0,false);
 		}		
 	}else{
-		startX = min(coords.first, coords1.first);
-		startY = min(coords.second, coords1.second);
-		endX = max(coords.first, coords1.first);
-		endY = max(coords.second, coords1.second);
+		startX = min(x1, x2);
+		startY = min(y1, y2);
+		endX = max(x1, x2);
+		endY = max(y1, y2);
 		for(int i = startX+1, j=startY+1; i< endX && j<endY ; i++,j++){
 			board[i][j].set(0,false);
 		}
@@ -202,7 +200,8 @@ int startX,startY,endX,endY;
 void game::input(){
 	string s;
 	getline(cin, s);
-	String[] splited = str.split(" ");
+	// vector <string> splited;
+	string splited[] = split(s," ");
 	int num_moves_in_input = (sizeof(splited)/sizeof(splited[0]))/3;
 	string move_type;
 	int x1, y1, x2, y2, x3, y3;
@@ -246,10 +245,12 @@ void game::input(){
 void game::initial_input(){
 	string s;
 	getline(cin, s);
-	String[] splited = str.split(" ");
+	string splited[] = split(s," ");
 	id = stoi(splited[0]) - 1;
 	num_rings = stoi(splited[1]);
 	time_left = stoi(splited[2]);
+	remove_win_rings = 5;
+	trail_length = 5;
 }
 void game::output(vector<int> v){
 	string ans;

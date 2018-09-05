@@ -44,8 +44,8 @@ public:
 	pair<int, int> yinsh_coord_to_my(int ring, int pos);
 	
 	// Update the board state. action_on_ring == 0 for placing a ring, 1 for moving and 2 for removing markers, 3 for removing ring
-	void update_board(int action_on_ring, int initial_x, int initial_y, final_x, final_y);
-	void flip_marker(int x1, int y1, int x2, int y2);
+	void update_board(int action_on_ring, int initial_x, int initial_y, int final_x, int final_y);
+	void flip_markers(int x1, int y1, int x2, int y2);
 	void remove_markers(int start_x, int start_y, int end_x, int end_y);
 	
 	// Initial Input of variables
@@ -56,6 +56,6 @@ public:
 
 	// Output my move to stdout
 	void output(vector<int> v);
-}
+};
 
 #endif

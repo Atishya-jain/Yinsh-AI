@@ -23,26 +23,22 @@ struct pos{
         valid = val;
     }
     // mark == 0 for no marker, mark == id for me and 1-id for other player
-    set(int mark, bool r){
+    void set(int mark, bool r){
         marker = mark;
         ring = r;
     }
 
-    setInvalid(){
+    void setInvalid(){
         valid = false;
     }
+};
+
+pair<int, int> my_coord_to_board(int &x, int &y, int &num_rings){
+    return make_pair(num_rings + x, num_rings - y);
 }
 
-pair<int, int> game::my_coord_to_board(int &x, int &y, int &num_rings){
-    pair <int, int> coords;
-    coords.make_pair(num_rings + x, num_rings - y);
-    return coords;
-}
-
-pair<int, int> game::board_to_my_coord(int &x, int &y, int &num_rings){
-    pair <int, int> coords;
-    coords.make_pair(x - num_rings, num_rings - y);
-    return coords;
+pair<int, int> board_to_my_coord(int &x, int &y, int &num_rings){
+    return make_pair(x - num_rings, num_rings - y);
 }
 
 #endif
