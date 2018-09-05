@@ -8,8 +8,8 @@ int main(int argc, char *argv[]){
 	// cout << "HI\n";
 	// ifstream in;
 	game core();
-	core.initialize_board();
 	core.initial_input();	
+	core.initialize_board();
 
 
 	// string c;
