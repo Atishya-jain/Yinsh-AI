@@ -1,33 +1,7 @@
 #include "Game.h"
+#include "Player.h"
+#include "Utils.h"
 
-
-random_device rd; // obtain a random number from hardware
-mt19937 eng(rd()); // seed the generator
-uniform_int_distribution<> distr(-5.9999999, 5.9999999); // define the range
-
-struct pos{
-	int x;
-	int y;
-	int marker;
-	bool ring, valid;
-	
-	pos(int x1, int y1, int mark, bool r, bool val){
-		x = x1;
-		y = y1;
-		marker = mark;
-		ring = r;
-		valid = val;
-	}
-	// mark == 0 for no marker, mark == id for me and 1-id for other player
-	set(int mark, bool r){
-		marker = mark;
-		ring = r;
-	}
-
-	setInvalid(){
-		valid = false;
-	}
-}
 game::game(){
 
 }
@@ -75,6 +49,8 @@ void game::initialize_board(){
 	board[l1-1][num_rings].setInvalid();
 	board[0][l1-1].setInvalid();
 	board[num_rings][l1-1].setInvalid();
+
+	my_player = player(num_rings);
 	if(id == 0){
 		play();
 	}else{
@@ -84,7 +60,7 @@ void game::initialize_board(){
 
 void game::play(){
 	vector<int> moves;
-	
+	my_player.make_next_move(board, moves, num_rings);
 	output(moves);
 }
 void game::my_coord_to_yinsh(int x, int y){
@@ -94,15 +70,9 @@ pair<int, int> game::yinsh_coord_to_my(int ring, int pos){
 
 }
 
-pair<int, int> game::my_coord_to_board(int x, int y){
-	pair <int, int> coords;
-	coords.make_pair(num_rings + x, num_rings - y);
-	return coords;
-}
-
 void game::update_board(int action_on_ring, int initial_x, int initial_y, final_x, final_y){
-	pair <int, int> coords = my_coord_to_board(initial_x, initial_y);
-	pair <int, int> coords1 = my_coord_to_board(final_x, final_y);
+	pair <int, int> coords = my_coord_to_board(initial_x, initial_y, num_rings);
+	pair <int, int> coords1 = my_coord_to_board(final_x, final_y, num_rings);
 	
 	if(action_on_ring == 0){
 		board[coords.first][coords.second].set(0, true);
@@ -125,13 +95,17 @@ void game::flip_markers(int x1, int y1, int x2, int y2){
 		startY = min(coords.second, coords1.second);
 		endY = max(coords.second, coords1.second);
 		for(int i = startY+1; i< endY; i++){
-			board[x1][i].set(1-board[x1][i].marker,false);
+			if(board[x1][i].marker != 0){
+				board[x1][i].set(1-board[x1][i].marker,false);
+			}
 		}
 	}else if(y1 == y2){
 		startX = min(coords.first, coords1.first);
 		endX = max(coords.first, coords1.first);
 		for(int i = startX+1; i< endX; i++){
-			board[i][y1].set(1-board[i][y1].marker,false);
+			if(board[i][y1].marker != 0){
+				board[i][y1].set(1-board[i][y1].marker,false);
+			}
 		}		
 	}else{
 		startX = min(coords.first, coords1.first);
@@ -139,7 +113,9 @@ void game::flip_markers(int x1, int y1, int x2, int y2){
 		endX = max(coords.first, coords1.first);
 		endY = max(coords.second, coords1.second);
 		for(int i = startX+1, j=startY+1; i< endX && j<endY ; i++,j++){
-			board[i][j].set(1-board[i][j].marker,false);
+			if(board[i][j].marker != 0){
+				board[i][j].set(1-board[i][j].marker,false);
+			}
 		}
 	}	
 }

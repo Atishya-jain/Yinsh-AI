@@ -8,6 +8,7 @@
 #include <limits>
 #include <algorithm>
 #include <random>
+#include "Utils.h"
 using namespace std;
 
 int max_lim = numeric_limits<int>::max();
@@ -27,6 +28,7 @@ private:
 	int id; // Identify if first move or not
 	double time_left; // Time left for our moves
 	bool train; // Set to true if training is going on
+	player my_player;
 public:
 	// Constructors
 	game();
@@ -39,7 +41,6 @@ public:
 	void play();
 	
 	// Coordinate converters
-	pair<int, int> my_coord_to_board(int x, int y);
 	void my_coord_to_yinsh(int x, int y);
 	pair<int, int> yinsh_coord_to_my(int ring, int pos);
 	
