@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <cmath>
 
 
 random_device rd; // obtain a random number from hardware
@@ -88,9 +89,52 @@ void game::play(){
 	output(moves);
 }
 void game::my_coord_to_yinsh(int x, int y){
+	int h,p;
+	if(x*y<0){
+		h = abs(x)+abs(y)
+	}else{
+		if (x>y){
+			h = x;
+		}else{
+			h = y;
+		}
+	}
+
+	if(x>=0 && y>=0)
+		p = x - y + h;
+	else if(y<=0 && x<=0)
+		p = y - x + 4*h
+	else if(x>0 and y<0)
+		p = 2*h - y;
+	else
+		p = 5*h + y;
 
 }
 pair<int, int> game::yinsh_coord_to_my(int ring, int pos){
+	int x,y;
+	if(pos>=0 && pos<=ring)
+		y = ring;
+	else if(pos>=3*ring && pos<=4*ring)
+		y = -1*ring;
+	else if(p>h && p<3*h)
+		y = 2*ring - pos;
+	else
+		y = pos - 5*ring;
+
+	if(pos>=ring && pos<=2*ring)
+		x = ring;
+	else if(pos>=4*ring && pos<=5*ring)
+		x = -1*ring;
+	else if(p>2*h && p<4*h)
+		x = 3*ring - pos;
+	else{
+		if (pos<ring)
+			x = pos;
+		else
+			x = pos - 6*h;
+	}
+	
+	return pair(x,y);
 
 }
 
