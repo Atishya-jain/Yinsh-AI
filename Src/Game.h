@@ -2,17 +2,15 @@
 #define GAME_H
 
 #include <iostream>
+#include <cstdlib>
 #include <string>
 #include <vector>
 #include <pair>
-#include <limits>
 #include <algorithm>
 #include <random>
-#include "Utils.h"
-using namespace std;
+#include <cmath>
 
-int max_lim = numeric_limits<int>::max();
-int min_lim = numeric_limits<int>::min();
+using namespace std;
 
 struct pos;
 
@@ -41,7 +39,7 @@ public:
 	void play();
 	
 	// Coordinate converters
-	void my_coord_to_yinsh(int x, int y);
+	pair<int, int> my_coord_to_yinsh(int x, int y);
 	pair<int, int> yinsh_coord_to_my(int ring, int pos);
 	
 	// Update the board state. action_on_ring == 0 for placing a ring, 1 for moving and 2 for removing markers, 3 for removing ring

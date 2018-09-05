@@ -1,6 +1,14 @@
 #ifndef UTIL_H
 #define	UTIL_H
 
+#include <limits>
+#include <vector>
+#include <pair>
+
+using namespace std;
+int max_lim = numeric_limits<int>::max();
+int min_lim = numeric_limits<int>::min();
+
 struct pos{
     int x;
     int y;

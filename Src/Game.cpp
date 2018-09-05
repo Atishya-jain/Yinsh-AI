@@ -20,10 +20,10 @@ void game::initialize_board(){
 		vector<pos> temp;
 		for(int j = 0; j<l1; j++){
 			if(j < mid - i){
-				pos temp_pos(min_lim, max_lim, 0, false, false);
+				pos temp_pos(min_lim, max_lim, 2, false, false);
 				temp.push_back(temp_pos);
 			}else{
-				pos temp_pos(j-mid, mid - i, 0, false, true);
+				pos temp_pos(j-mid, mid - i, 2, false, true);
 				temp.push_back(temp_pos);				
 			}
 		}
@@ -34,10 +34,10 @@ void game::initialize_board(){
 		vector<pos> temp;	
 		for(int j = 0; j<l1; j++){
 			if(j < l1 - i + mid){
-				pos temp_pos(j-mid, mid - i, 0, false, true);
+				pos temp_pos(j-mid, mid - i, 2, false, true);
 				temp.push_back(temp_pos);
 			}else{
-				pos temp_pos(max_lim, min_lim, 0, false, false);
+				pos temp_pos(max_lim, min_lim, 2, false, false);
 				temp.push_back(temp_pos);				
 			}
 		}
@@ -50,7 +50,7 @@ void game::initialize_board(){
 	board[0][l1-1].setInvalid();
 	board[num_rings][l1-1].setInvalid();
 
-	my_player = player(num_rings);
+	my_player = player(num_rings, id, trail_length);
 	if(id == 0){
 		play();
 	}else{
@@ -61,12 +61,67 @@ void game::initialize_board(){
 void game::play(){
 	vector<int> moves;
 	my_player.make_next_move(board, moves, num_rings);
+	if(moves[0] == 0){
+		update_board(0, moves[1], moves[2]);
+	}else if(moves[0] == 1){
+		update_board(1, moves[1], moves[2], moves[3], moves[4]);
+	}else{
+		update_board(1, moves[1], moves[2], moves[3], moves[4]);
+		update_board(2, moves[5], moves[6], moves[7], moves[8]);
+		update_board(3, moves[9], moves[10], max_lim, max_lim);
+	}
 	output(moves);
 }
-void game::my_coord_to_yinsh(int x, int y){
+pair<int, int> game::my_coord_to_yinsh(int x, int y){
+	int h,p;
+	if(x*y<0){
+		h = abs(x)+abs(y)
+	}else{
+		if (x>y){
+			h = x;
+		}else{
+			h = y;
+		}
+	}
+
+	if(x>=0 && y>=0)
+		p = x - y + h;
+	else if(y<=0 && x<=0)
+		p = y - x + 4*h
+	else if(x>0 and y<0)
+		p = 2*h - y;
+	else
+		p = 5*h + y;
+
+	pair <int, int> v = make_pair(h,p);
+	return v;
 
 }
 pair<int, int> game::yinsh_coord_to_my(int ring, int pos){
+	int x,y;
+	if(pos>=0 && pos<=ring)
+		y = ring;
+	else if(pos>=3*ring && pos<=4*ring)
+		y = -1*ring;
+	else if(p>h && p<3*h)
+		y = 2*ring - pos;
+	else
+		y = pos - 5*ring;
+
+	if(pos>=ring && pos<=2*ring)
+		x = ring;
+	else if(pos>=4*ring && pos<=5*ring)
+		x = -1*ring;
+	else if(p>2*h && p<4*h)
+		x = 3*ring - pos;
+	else{
+		if (pos<ring)
+			x = pos;
+		else
+			x = pos - 6*h;
+	}
+	pair <int, int> v = make_pair(x,y);
+	return v;
 
 }
 
@@ -95,7 +150,7 @@ void game::flip_markers(int x1, int y1, int x2, int y2){
 		startY = min(coords.second, coords1.second);
 		endY = max(coords.second, coords1.second);
 		for(int i = startY+1; i< endY; i++){
-			if(board[x1][i].marker != 0){
+			if(board[x1][i].marker != 2){
 				board[x1][i].set(1-board[x1][i].marker,false);
 			}
 		}
@@ -103,7 +158,7 @@ void game::flip_markers(int x1, int y1, int x2, int y2){
 		startX = min(coords.first, coords1.first);
 		endX = max(coords.first, coords1.first);
 		for(int i = startX+1; i< endX; i++){
-			if(board[i][y1].marker != 0){
+			if(board[i][y1].marker != 2){
 				board[i][y1].set(1-board[i][y1].marker,false);
 			}
 		}		
@@ -113,7 +168,7 @@ void game::flip_markers(int x1, int y1, int x2, int y2){
 		endX = max(coords.first, coords1.first);
 		endY = max(coords.second, coords1.second);
 		for(int i = startX+1, j=startY+1; i< endX && j<endY ; i++,j++){
-			if(board[i][j].marker != 0){
+			if(board[i][j].marker != 2){
 				board[i][j].set(1-board[i][j].marker,false);
 			}
 		}
@@ -146,7 +201,7 @@ int startX,startY,endX,endY;
 }
 void game::input(){
 	string s;
-	cin >> s;
+	getline(cin, s);
 	String[] splited = str.split(" ");
 	int num_moves_in_input = (sizeof(splited)/sizeof(splited[0]))/3;
 	string move_type;
@@ -190,7 +245,7 @@ void game::input(){
 }
 void game::initial_input(){
 	string s;
-	cin >> s;
+	getline(cin, s);
 	String[] splited = str.split(" ");
 	id = stoi(splited[0]) - 1;
 	num_rings = stoi(splited[1]);
@@ -198,54 +253,63 @@ void game::initial_input(){
 }
 void game::output(vector<int> v){
 	string ans;
+	pair <int, int> coords = my_coord_to_yinsh(v[1], v[2]);
 	if(v[0] == 0){   // PLace a ring 	 
+		pair <int, int> coords = my_coord_to_yinsh(v[1], v[2]);
 		ans = "P";
 		ans += " ";
-		ans += to_string(v[1]);
+		ans += to_string(coords.first);
 		ans += " ";
-		ans += to_string(v[2]);
+		ans += to_string(coords.second);
 	}else if(v[0] == 1){   // Just move and no remove
+		pair <int, int> coords = my_coord_to_yinsh(v[1], v[2]);
+		pair <int, int> coords1 = my_coord_to_yinsh(v[3], v[4]);
 		ans = "S";
 		ans += " ";
-		ans += to_string(v[1]);
+		ans += to_string(coords.first);
 		ans += " ";
-		ans += to_string(v[2]);
+		ans += to_string(coords.second);
 		ans += " ";
 		ans += "M";
 		ans += " ";
-		ans += to_string(v[3]);
+		ans += to_string(coords1.first);
 		ans += " ";
-		ans += to_string(v[4]);		
+		ans += to_string(coords1.second);		
 	}else{
+		pair <int, int> coords = my_coord_to_yinsh(v[1], v[2]);
+		pair <int, int> coords1 = my_coord_to_yinsh(v[3], v[4]);
+		pair <int, int> coords2 = my_coord_to_yinsh(v[5], v[6]);
+		pair <int, int> coords3 = my_coord_to_yinsh(v[7], v[8]);
+		pair <int, int> coords4 = my_coord_to_yinsh(v[9], v[10]);
 		ans = "S";
 		ans += " ";
-		ans += to_string(v[1]);
+		ans += to_string(coords.first);
 		ans += " ";
-		ans += to_string(v[2]);
+		ans += to_string(coords.second);
 		ans += " ";
 		ans += "M";
 		ans += " ";
-		ans += to_string(v[3]);
+		ans += to_string(coords1.first);
 		ans += " ";
-		ans += to_string(v[4]);				
+		ans += to_string(coords1.second);				
 		ans += " ";
 		ans = "RS";
 		ans += " ";
-		ans += to_string(v[5]);
+		ans += to_string(coords2.first);
 		ans += " ";
-		ans += to_string(v[6]);
+		ans += to_string(coords2.second);
 		ans += " ";
 		ans += "RE";
 		ans += " ";
-		ans += to_string(v[7]);
+		ans += to_string(coords3.first);
 		ans += " ";
-		ans += to_string(v[8]);		
+		ans += to_string(coords3.second);		
 		ans += " ";
 		ans += "X";
 		ans += " ";
-		ans += to_string(v[9]);
+		ans += to_string(coords4.first);
 		ans += " ";
-		ans += to_string(v[10]);		
+		ans += to_string(coords4.second);		
 	}
 	cout << ans << endl;
 	input();
