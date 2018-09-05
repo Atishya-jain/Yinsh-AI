@@ -1,5 +1,10 @@
 #include "Game.h"
 
+
+random_device rd; // obtain a random number from hardware
+mt19937 eng(rd()); // seed the generator
+uniform_int_distribution<> distr(-5.9999999, 5.9999999); // define the range
+
 struct pos{
 	int x;
 	int y;
@@ -13,12 +18,14 @@ struct pos{
 		ring = r;
 		valid = val;
 	}
-	set(int x1, int y1, int mark, bool r, bool val){
-		x = x1;
-		y = y1;
+	// mark == 0 for no marker, mark == id for me and 1-id for other player
+	set(int mark, bool r){
 		marker = mark;
 		ring = r;
-		valid = val;
+	}
+
+	setInvalid(){
+		valid = false;
 	}
 }
 game::game(){
@@ -62,7 +69,13 @@ void game::initialize_board(){
 		}
 		board.push_back(temp);	
 	}
-	if(id == 1){
+	board[num_rings][0].setInvalid();
+	board[l1-1][0].setInvalid();
+	board[0][num_rings].setInvalid();
+	board[l1-1][num_rings].setInvalid();
+	board[0][l1-1].setInvalid();
+	board[num_rings][l1-1].setInvalid();
+	if(id == 0){
 		play();
 	}else{
 		input();
@@ -70,22 +83,90 @@ void game::initialize_board(){
 }
 
 void game::play(){
-	output();
+	vector<int> moves;
+	
+	output(moves);
 }
 void game::my_coord_to_yinsh(int x, int y){
 
 }
 pair<int, int> game::yinsh_coord_to_my(int ring, int pos){
-	
+
 }
+
+pair<int, int> game::my_coord_to_board(int x, int y){
+	pair <int, int> coords;
+	coords.make_pair(num_rings + x, num_rings - y);
+	return coords;
+}
+
 void game::update_board(int action_on_ring, int initial_x, int initial_y, final_x, final_y){
-
+	pair <int, int> coords = my_coord_to_board(initial_x, initial_y);
+	pair <int, int> coords1 = my_coord_to_board(final_x, final_y);
+	
+	if(action_on_ring == 0){
+		board[coords.first][coords.second].set(0, true);
+	}else if(action_on_ring == 1){
+		board[coords.first][coords.second].set(id, false);
+		flip_markers(coords.first, coords.second, coords1.first, coords1.second);		
+		board[coords1.first][coords1.second].set(0, true);
+	}else if(action_on_ring == 2){
+		remove_markers(coords.first, coords.second, coords1.first, coords1.second);
+	}else{
+		board[coords.first][coords.second].set(0, false);
+	}
 }
-void game::flip_marker(int x, int y){
 
+// Won't flip the marker at x2, y2 and x1,y1
+void game::flip_markers(int x1, int y1, int x2, int y2){
+	int startX,startY,endX,endY;
+
+	if(x1 == x2){
+		startY = min(coords.second, coords1.second);
+		endY = max(coords.second, coords1.second);
+		for(int i = startY+1; i< endY; i++){
+			board[x1][i].set(1-board[x1][i].marker,false);
+		}
+	}else if(y1 == y2){
+		startX = min(coords.first, coords1.first);
+		endX = max(coords.first, coords1.first);
+		for(int i = startX+1; i< endX; i++){
+			board[i][y1].set(1-board[i][y1].marker,false);
+		}		
+	}else{
+		startX = min(coords.first, coords1.first);
+		startY = min(coords.second, coords1.second);
+		endX = max(coords.first, coords1.first);
+		endY = max(coords.second, coords1.second);
+		for(int i = startX+1, j=startY+1; i< endX && j<endY ; i++,j++){
+			board[i][j].set(1-board[i][j].marker,false);
+		}
+	}	
 }
 void game::remove_markers(int start_x, int start_y, int end_x, int end_y){
+int startX,startY,endX,endY;
 
+	if(x1 == x2){
+		startY = min(coords.second, coords1.second);
+		endY = max(coords.second, coords1.second);
+		for(int i = startY+1; i< endY; i++){
+			board[x1][i].set(0,false);
+		}
+	}else if(y1 == y2){
+		startX = min(coords.first, coords1.first);
+		endX = max(coords.first, coords1.first);
+		for(int i = startX+1; i< endX; i++){
+			board[i][y1].set(0,false);
+		}		
+	}else{
+		startX = min(coords.first, coords1.first);
+		startY = min(coords.second, coords1.second);
+		endX = max(coords.first, coords1.first);
+		endY = max(coords.second, coords1.second);
+		for(int i = startX+1, j=startY+1; i< endX && j<endY ; i++,j++){
+			board[i][j].set(0,false);
+		}
+	}
 }
 void game::input(){
 	string s;
@@ -135,10 +216,61 @@ void game::initial_input(){
 	string s;
 	cin >> s;
 	String[] splited = str.split(" ");
-	id = stoi(splited[0]);
+	id = stoi(splited[0]) - 1;
 	num_rings = stoi(splited[1]);
 	time_left = stoi(splited[2]);
 }
-void game::output(){
-
+void game::output(vector<int> v){
+	string ans;
+	if(v[0] == 0){   // PLace a ring 	 
+		ans = "P";
+		ans += " ";
+		ans += to_string(v[1]);
+		ans += " ";
+		ans += to_string(v[2]);
+	}else if(v[0] == 1){   // Just move and no remove
+		ans = "S";
+		ans += " ";
+		ans += to_string(v[1]);
+		ans += " ";
+		ans += to_string(v[2]);
+		ans += " ";
+		ans += "M";
+		ans += " ";
+		ans += to_string(v[3]);
+		ans += " ";
+		ans += to_string(v[4]);		
+	}else{
+		ans = "S";
+		ans += " ";
+		ans += to_string(v[1]);
+		ans += " ";
+		ans += to_string(v[2]);
+		ans += " ";
+		ans += "M";
+		ans += " ";
+		ans += to_string(v[3]);
+		ans += " ";
+		ans += to_string(v[4]);				
+		ans += " ";
+		ans = "RS";
+		ans += " ";
+		ans += to_string(v[5]);
+		ans += " ";
+		ans += to_string(v[6]);
+		ans += " ";
+		ans += "RE";
+		ans += " ";
+		ans += to_string(v[7]);
+		ans += " ";
+		ans += to_string(v[8]);		
+		ans += " ";
+		ans += "X";
+		ans += " ";
+		ans += to_string(v[9]);
+		ans += " ";
+		ans += to_string(v[10]);		
+	}
+	cout << ans << endl;
+	input();
 }
