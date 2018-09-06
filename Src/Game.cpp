@@ -219,17 +219,22 @@ void game::input(){
 	y1 = stoi(splited[2]);
 	pair <int, int> my_coord = yinsh_coord_to_my(x1, y1);
 	cout << "Converted to yinsh: " << my_coord.first << " " << my_coord.second << endl;
-
+	cout << "move_type: " << move_type << endl;
 	if(move_type.compare("P") == 0){
 		cout << "So I start placing the ring\n";
 		// Just place the ring in position
 		update_board(0, my_coord.first, my_coord.second, max_lim, max_lim);
-	}else if((move_type.compare("S")) && (num_moves_in_input == 2)){
+	}else if((move_type.compare("S") == 0) && (num_moves_in_input == 2)){
 		// move the ring
+		cout << "Let's move it\n";
 		x2 = stoi(splited[4]);
 		y2 = stoi(splited[5]);
+		cout  << "Conversion again starts\n";
 		pair <int, int> my_coord2 = yinsh_coord_to_my(x2, y2);
+		cout << "Mine move coords: " << my_coord2.first << " " << my_coord2.second << endl;
+		cout << "Move: " << endl;
 		update_board(1, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second);
+		cout << "Move Done\n";
 	}else{
 		// Move the ring
 		x2 = stoi(splited[4]);
@@ -279,9 +284,9 @@ void game::initial_input(){
 }
 void game::output(vector<int>& v){
 	string ans;
-	cout << "yinsh's: " << v[1] << " " << v[2] << endl;
+	cout << "david's: " << v[1] << " " << v[2] << endl;
 	pair <int, int> coords = my_coord_to_yinsh(v[1], v[2]);
-	cout << "Converted to mine back: " << coords.first << " " << coords.second << endl;
+	cout << "Converted to yinsh: " << coords.first << " " << coords.second << endl;
 	if(v[0] == 0){   // PLace a ring 	 
 		pair <int, int> coords = my_coord_to_yinsh(v[1], v[2]);
 		ans = "P";
