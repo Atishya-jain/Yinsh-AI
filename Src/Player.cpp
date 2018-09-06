@@ -25,9 +25,12 @@ void player::make_next_move(vector<vector<pos>>& board, vector<int>& moves){
 	}else{
 		uniform_int_distribution<> distr2(0, num_rings+0.99999999); // define the range
 		int ring = distr2(eng);
+		// cout << "ring: " << ring << endl;
 		pair<int,int> coords = board_to_my_coord(ring_pos[ring].first, ring_pos[ring].second, num_rings);
 		vector<pair<int,pair<int,int>>> all_valid_moves;
+		// cout << "Let's find all valid moves.\n";
 		get_valid_moves(board, all_valid_moves, ring);
+		// cout << "Valid moves done\n";
 		if(all_valid_moves.size() > 0){
 			uniform_int_distribution<> distr3(0, all_valid_moves.size()-0.00000001); // define the range
 			int index = distr3(eng);
@@ -39,6 +42,8 @@ void player::make_next_move(vector<vector<pos>>& board, vector<int>& moves){
 				coords = board_to_my_coord((all_valid_moves[index].second).first, (all_valid_moves[index].second).second, num_rings);
 				moves.push_back(coords.first);
 				moves.push_back(coords.second);
+				ring_pos[ring].first = coords.first;
+				ring_pos[ring].second = coords.second;
 			}else if(all_valid_moves[index].first == 2){
 				moves.push_back(2);
 				moves.push_back(coords.first);
@@ -47,6 +52,8 @@ void player::make_next_move(vector<vector<pos>>& board, vector<int>& moves){
 				coords = board_to_my_coord((all_valid_moves[index].second).first, (all_valid_moves[index].second).second, num_rings);
 				moves.push_back(coords.first);
 				moves.push_back(coords.second);
+				ring_pos[ring].first = coords.first;
+				ring_pos[ring].second = coords.second;
 
 				coords = board_to_my_coord((stretch.first).first, (stretch.first).second, num_rings);
 				moves.push_back(coords.first);
@@ -58,7 +65,9 @@ void player::make_next_move(vector<vector<pos>>& board, vector<int>& moves){
 
 				coords = board_to_my_coord(ring_pos[ring_pos.size()-1].first, ring_pos[ring_pos.size()-1].second, num_rings);
 				moves.push_back(coords.first);
-				moves.push_back(coords.second);				
+				moves.push_back(coords.second);	
+
+				// For now remove last ring always			
 				ring_pos.erase(ring_pos.end()-1);
 			}
 		}else{
@@ -91,7 +100,11 @@ void player::get_valid_moves(vector<vector<pos>>& board, vector<pair<int,pair<in
 	bool stretched = false; // Variable to check if a continuous trail of 5 or more occurred
 	int count_trail = 0;
 	int step_x, step_y;
+
+	// cout << "Start with for loop\n";
 	for(int i = 0; i<6; i++){
+		// cout << "step: " << i << endl;
+
 		if(i == 0){
 			step_x = 1; step_y = 0;
 		}else if(i == 1){
@@ -111,10 +124,10 @@ void player::get_valid_moves(vector<vector<pos>>& board, vector<pair<int,pair<in
 		init_x = ring_pos[ring_index].first;
 		init_y = ring_pos[ring_index].second;
 		stretched = false;
+		init_x += step_x;
+		init_y += step_y;
 		while((init_x >= 0) && (init_x < board_size) && (init_y >= 0) && (init_y < board_size)){
-			init_x += step_x;
-			init_y += step_y;
-			if(!board[init_x][init_y].valid){
+			if(board[init_x][init_y].valid == false){
 				break;
 			}else if(board[init_x][init_y].marker != 2){
 				trail = true;
@@ -147,14 +160,30 @@ void player::get_valid_moves(vector<vector<pos>>& board, vector<pair<int,pair<in
 				if(trail){
 					if(stretched){
 						all_valid_moves.push_back(make_pair(2, make_pair(init_x, init_y)));
+					}else if((my_conti == true) && (count_trail == num_rings)){
+						all_valid_moves.push_back(make_pair(2, make_pair(init_x, init_y)));
+						(stretch.second).first = init_x;
+						(stretch.second).second = init_y;						
+					}else if((my_conti == true) && (count_trail > num_rings)){
+						all_valid_moves.push_back(make_pair(2, make_pair(init_x, init_y)));
+						(stretch.first).first = min((stretch.first).first, init_x);
+						(stretch.first).second = min((stretch.first).second, init_y);
+						(stretch.second).first = (stretch.first).first + (trail_length-1);
+						(stretch.second).second = (stretch.first).second + (trail_length-1);											
 					}else{
 						all_valid_moves.push_back(make_pair(1, make_pair(init_x, init_y)));						
 					}
+					my_conti = false;
+					count_trail = 0;
+					stretched = false;
 					break;
 				}else{
 					all_valid_moves.push_back(make_pair(1,make_pair(init_x, init_y)));
 				}
+				trail = false;
 			}
+			init_x += step_x;
+			init_y += step_y;
 		}
 	}
 }
