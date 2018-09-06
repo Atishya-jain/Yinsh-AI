@@ -1,5 +1,7 @@
-#include "Player.h"
 #include "Utils.h"
+#include "Player.h"
+int max_lim_p = numeric_limits<int>::max();
+int min_lim_p = numeric_limits<int>::min();
 
 random_device rd; // obtain a random number from hardware
 mt19937 eng(rd()); // seed the generator
@@ -16,7 +18,7 @@ player::player(int numr, int idd, int tl){
 	board_size = 2*numr+1;
 }
 
-void player::make_next_move(vector<vector<pos>> board, vector<int> moves){
+void player::make_next_move(vector<vector<pos>>& board, vector<int>& moves){
 	if(num_rings_placed < num_rings){
 		place_rings(board, moves);
 		num_rings_placed++;
@@ -65,7 +67,7 @@ void player::make_next_move(vector<vector<pos>> board, vector<int> moves){
 	}
 }
 
-void player::place_rings(vector<vector<pos>> board, vector<int> moves){
+void player::place_rings(vector<vector<pos>>& board, vector<int>& moves){
 	uniform_int_distribution<> distr(-1*(num_rings+0.99999999), num_rings+0.99999999); // define the range
 	int x = distr(eng);
 	int y = distr(eng);
@@ -81,7 +83,7 @@ void player::place_rings(vector<vector<pos>> board, vector<int> moves){
 	}
 }
 
-void player::get_valid_moves(vector<vector<pos>> board, vector<pair<int,pair<int,int>>> all_valid_moves, int ring_index){
+void player::get_valid_moves(vector<vector<pos>>& board, vector<pair<int,pair<int,int>>>& all_valid_moves, int ring_index){
 	int init_x = ring_pos[ring_index].first;
 	int init_y = ring_pos[ring_index].second;
 	bool trail = false; // Variable that is true at marker positions
@@ -121,8 +123,8 @@ void player::get_valid_moves(vector<vector<pos>> board, vector<pair<int,pair<int
 						my_conti = true;
 						(stretch.first).first = init_x;
 						(stretch.first).second = init_y;
-						(stretch.second).first = max_lim;
-						(stretch.second).second = max_lim;						
+						(stretch.second).first = max_lim_p;
+						(stretch.second).second = max_lim_p;						
 					}
 					count_trail++;
 				}else{

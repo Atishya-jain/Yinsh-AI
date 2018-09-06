@@ -1,6 +1,8 @@
+#include "Utils.h"
 #include "Game.h"
 #include "Player.h"
-#include "Utils.h"
+int max_lim = numeric_limits<int>::max();
+int min_lim = numeric_limits<int>::min();
 
 game::game(){
 
@@ -13,6 +15,7 @@ game::game(int n){
 }
 
 void game::initialize_board(){
+	cout << "Let's Initialise board\n";
 	int l1 = 2*num_rings + 1;
 	int mid = num_rings;
 
@@ -51,9 +54,12 @@ void game::initialize_board(){
 	board[num_rings][l1-1].setInvalid();
 
 	my_player = player(num_rings, id, trail_length);
+	cout << "Initialise board Done\n";	
 	if(id == 0){
+		cout << "Start player 1\n";	
 		play();
 	}else{
+		cout << "Waiting for input\n";	
 		input();
 	}
 }
@@ -200,16 +206,22 @@ int startX,startY,endX,endY;
 void game::input(){
 	string s;
 	getline(cin, s);
-	// vector <string> splited;
-	string splited[] = split(s," ");
-	int num_moves_in_input = (sizeof(splited)/sizeof(splited[0]))/3;
+	vector <string> splited;
+	splitString(s," ",splited);
+	int num_moves_in_input = splited.size()/3;
+	cout << "num_moves_in_input: " << splited.size() << endl;
+	cout << "num_moves_in_input: " << num_moves_in_input << endl;
+
 	string move_type;
 	int x1, y1, x2, y2, x3, y3;
 	move_type = splited[0];
 	x1 = stoi(splited[1]);
 	y1 = stoi(splited[2]);
 	pair <int, int> my_coord = yinsh_coord_to_my(x1, y1);
+	cout << "Converted to yinsh: " << my_coord.first << " " << my_coord.second << endl;
+
 	if(move_type.compare("P") == 0){
+		cout << "So I start placing the ring\n";
 		// Just place the ring in position
 		update_board(0, my_coord.first, my_coord.second, max_lim, max_lim);
 	}else if((move_type.compare("S")) && (num_moves_in_input == 2)){
@@ -245,16 +257,31 @@ void game::input(){
 void game::initial_input(){
 	string s;
 	getline(cin, s);
-	string splited[] = split(s," ");
+	vector<string> splited;
+	
+	cout << "Split started\n";
+	splitString(s," ", splited);
+	cout << "Split done\n";
+	
+	cout << "Size of splited array: " << splited.size() << endl;
 	id = stoi(splited[0]) - 1;
+	cout << id << endl;
+	
 	num_rings = stoi(splited[1]);
+	cout << num_rings << endl;
+	
 	time_left = stoi(splited[2]);
+	cout << time_left << endl;
+	
 	remove_win_rings = 5;
 	trail_length = 5;
+	cout << "Initial Input done\n" << endl;
 }
-void game::output(vector<int> v){
+void game::output(vector<int>& v){
 	string ans;
+	cout << "yinsh's: " << v[1] << " " << v[2] << endl;
 	pair <int, int> coords = my_coord_to_yinsh(v[1], v[2]);
+	cout << "Converted to mine back: " << coords.first << " " << coords.second << endl;
 	if(v[0] == 0){   // PLace a ring 	 
 		pair <int, int> coords = my_coord_to_yinsh(v[1], v[2]);
 		ans = "P";

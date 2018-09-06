@@ -55,7 +55,7 @@ public:
 	void input();
 
 	// Output my move to stdout
-	void output(vector<int> v);
+	void output(vector<int>& v);
 };
 
 #endif
