@@ -108,7 +108,7 @@ void player::get_valid_moves(vector<vector<pos>>& board, vector<pair<int,pair<in
 		if(i == 0){
 			step_x = 1; step_y = 0;
 		}else if(i == 1){
-			step_x = 1; step_y = 1;
+			step_x = 1; step_y = -1;
 		}else if(i == 2){
 			step_x = 0; step_y = 1;
 		}else if(i == 3){
@@ -116,7 +116,7 @@ void player::get_valid_moves(vector<vector<pos>>& board, vector<pair<int,pair<in
 		}else if(i == 4){
 			step_x = -1; step_y = 0;
 		}else if(i == 5){
-			step_x = -1; step_y = -1;
+			step_x = -1; step_y = 1;
 		}
 		trail = false;
 		my_conti = false;
@@ -127,7 +127,7 @@ void player::get_valid_moves(vector<vector<pos>>& board, vector<pair<int,pair<in
 		init_x += step_x;
 		init_y += step_y;
 		while((init_x >= 0) && (init_x < board_size) && (init_y >= 0) && (init_y < board_size)){
-			if(board[init_x][init_y].valid == false){
+			if((board[init_x][init_y].valid == false) || (board[init_x][init_y].ring == true)){
 				break;
 			}else if(board[init_x][init_y].marker != 2){
 				trail = true;

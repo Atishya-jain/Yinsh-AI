@@ -4,7 +4,7 @@ using namespace std;
 
 int main(int argc, char *argv[]){
 	game core;
-	cout << "Enter initial_inputs\n";
+	// cout << "Enter initial_inputs\n";
 	core.initial_input();	
 	core.initialize_board();
 	

@@ -210,49 +210,92 @@ void game::input(){
 
 	string move_type;
 	int x1, y1, x2, y2, x3, y3;
-	move_type = splited[0];
-	x1 = stoi(splited[1]);
-	y1 = stoi(splited[2]);
-	pair <int, int> my_coord = yinsh_coord_to_my(x1, y1);
-	// cout << "Converted to yinsh: " << my_coord.first << " " << my_coord.second << endl;
-	// cout << "move_type: " << move_type << endl;
-	if(move_type.compare("P") == 0){
-		// cout << "So I start placing the ring\n";
-		// Just place the ring in position
-		update_board(0, my_coord.first, my_coord.second, max_lim, max_lim);
-	}else if((move_type.compare("S") == 0) && (num_moves_in_input == 2)){
-		// move the ring
-		// cout << "Let's move it\n";
-		x2 = stoi(splited[4]);
-		y2 = stoi(splited[5]);
-		// cout  << "Conversion again starts\n";
-		pair <int, int> my_coord2 = yinsh_coord_to_my(x2, y2);
-		// cout << "Mine move coords: " << my_coord2.first << " " << my_coord2.second << endl;
-		// cout << "Move: " << endl;
-		update_board(1, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second);
-		// cout << "Move Done\n";
-	}else{
-		// Move the ring
-		x2 = stoi(splited[4]);
-		y2 = stoi(splited[5]);
-		pair <int, int> my_coord2 = yinsh_coord_to_my(x2, y2);
-		update_board(1, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second);
-
-		// remove markers
-		x1 = stoi(splited[7]);
-		y1 = stoi(splited[8]);
-		my_coord = yinsh_coord_to_my(x1, y1);
-		x2 = stoi(splited[10]);
-		y2 = stoi(splited[11]);
-		my_coord2 = yinsh_coord_to_my(x2, y2);
-		update_board(2, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second);
-		
-		// remove ring
-		x1 = stoi(splited[13]);
-		y1 = stoi(splited[14]);
-		my_coord = yinsh_coord_to_my(x1, y1);
-		update_board(3, my_coord.first, my_coord.second, max_lim, max_lim);
+	int i = 0;
+	pair <int, int> my_coord, my_coord2;
+	while(i < num_moves_in_input){
+		move_type = splited[3*i];
+		if(move_type.compare("P") == 0){
+			x1 = stoi(splited[3*i+1]);
+			y1 = stoi(splited[3*i+2]);	
+			my_coord = yinsh_coord_to_my(x1, y1);
+			update_board(0, my_coord.first, my_coord.second, max_lim, max_lim);
+		}else if(move_type.compare("S") == 0){
+			x1 = stoi(splited[3*i+1]);
+			y1 = stoi(splited[3*i+2]);	
+			my_coord = yinsh_coord_to_my(x1, y1);
+			// move the ring
+			// cout << "Let's move it\n";
+			x2 = stoi(splited[3*i+4]);
+			y2 = stoi(splited[3*i+5]);
+			// cout  << "Conversion again starts\n";
+			my_coord2 = yinsh_coord_to_my(x2, y2);
+			// cout << "Mine move coords: " << my_coord2.first << " " << my_coord2.second << endl;
+			// cout << "Move: " << endl;
+			update_board(1, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second);
+			// cout << "Move Done\n";
+			i++;
+		}else{
+			// remove markers
+			x1 = stoi(splited[3*i+1]);
+			y1 = stoi(splited[3*i+2]);
+			my_coord = yinsh_coord_to_my(x1, y1);
+			x2 = stoi(splited[3*i+4]);
+			y2 = stoi(splited[3*i+5]);
+			my_coord2 = yinsh_coord_to_my(x2, y2);
+			update_board(2, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second);
+			
+			// remove ring
+			x1 = stoi(splited[3*i+7]);
+			y1 = stoi(splited[3*i+8]);
+			my_coord = yinsh_coord_to_my(x1, y1);
+			update_board(3, my_coord.first, my_coord.second, max_lim, max_lim);
+			i = i+2;
+		}	
+		i++;
 	}
+	// move_type = splited[0];
+	// x1 = stoi(splited[1]);
+	// y1 = stoi(splited[2]);
+	// pair <int, int> my_coord = yinsh_coord_to_my(x1, y1);
+	// // cout << "Converted to yinsh: " << my_coord.first << " " << my_coord.second << endl;
+	// // cout << "move_type: " << move_type << endl;
+	// if(move_type.compare("P") == 0){
+	// 	// cout << "So I start placing the ring\n";
+	// 	// Just place the ring in position
+	// 	update_board(0, my_coord.first, my_coord.second, max_lim, max_lim);
+	// }else if((move_type.compare("S") == 0) && (num_moves_in_input == 2)){
+	// 	// move the ring
+	// 	// cout << "Let's move it\n";
+	// 	x2 = stoi(splited[4]);
+	// 	y2 = stoi(splited[5]);
+	// 	// cout  << "Conversion again starts\n";
+	// 	pair <int, int> my_coord2 = yinsh_coord_to_my(x2, y2);
+	// 	// cout << "Mine move coords: " << my_coord2.first << " " << my_coord2.second << endl;
+	// 	// cout << "Move: " << endl;
+	// 	update_board(1, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second);
+	// 	// cout << "Move Done\n";
+	// }else{
+	// 	// Move the ring
+	// 	x2 = stoi(splited[4]);
+	// 	y2 = stoi(splited[5]);
+	// 	pair <int, int> my_coord2 = yinsh_coord_to_my(x2, y2);
+	// 	update_board(1, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second);
+
+	// 	// remove markers
+	// 	x1 = stoi(splited[7]);
+	// 	y1 = stoi(splited[8]);
+	// 	my_coord = yinsh_coord_to_my(x1, y1);
+	// 	x2 = stoi(splited[10]);
+	// 	y2 = stoi(splited[11]);
+	// 	my_coord2 = yinsh_coord_to_my(x2, y2);
+	// 	update_board(2, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second);
+		
+	// 	// remove ring
+	// 	x1 = stoi(splited[13]);
+	// 	y1 = stoi(splited[14]);
+	// 	my_coord = yinsh_coord_to_my(x1, y1);
+	// 	update_board(3, my_coord.first, my_coord.second, max_lim, max_lim);
+	// }
 	play();
 }
 void game::initial_input(){
