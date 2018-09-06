@@ -83,11 +83,7 @@ pair<int, int> game::my_coord_to_yinsh(int x, int y){
 	if(x*y<0){
 		h = abs(x)+abs(y);
 	}else{
-		if (x>y){
-			h = x;
-		}else{
-			h = y;
-		}
+		h = max(abs(x), abs(y));
 	}
 
 	if(x>=0 && y>=0)
