@@ -14,7 +14,7 @@ struct pos{
         ring = r;
         valid = val;
     }
-    // mark == 0 for no marker, mark == id for me and 1-id for other player
+    // mark == 2 for no marker, mark == id for me and 1-id for other player
     void set(int mark, bool r){
         marker = mark;
         ring = r;

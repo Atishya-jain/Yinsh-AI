@@ -1,1 +1,0 @@
-Implement a hash table to go from our intuitive coordinates to original coordinates on board
