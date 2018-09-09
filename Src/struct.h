@@ -2,20 +2,16 @@
 #define STRUCT_H
 
 struct pos{
-    int x;
-    int y;
-    int marker;
-    bool ring, valid;
+    int marker, ring;
+    bool valid;
     
-    pos(int x1, int y1, int mark, bool r, bool val){
-        x = x1;
-        y = y1;
+    pos(int mark, int r, bool val){
         marker = mark;
         ring = r;
         valid = val;
     }
-    // mark == 0 for no marker, mark == id for me and 1-id for other player
-    void set(int mark, bool r){
+    // mark == 2 for no marker, mark == id for me and 1-id for other player
+    void set(int mark, int r){
         marker = mark;
         ring = r;
     }
@@ -25,4 +21,8 @@ struct pos{
     }
 };
 
+union mov{
+    string move_t;
+    int coord;
+};
 #endif
