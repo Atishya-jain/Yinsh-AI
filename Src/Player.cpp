@@ -400,7 +400,7 @@ void player::remove_trails_and_rings(vector<vector<pos>>& board, vector<int>& mo
 			moves.push_back(movet2); moves.push_back(coord3); moves.push_back(coord4);
 			update_board(board, 2, (my_trails[i].first).first, (my_trails[i].first).second, (my_trails[i].second).first, (my_trails[i].second).second, true);
 			remove_ring(board, moves);
-			remove_repeated_trails(board, pp);
+			remove_repeated_trails(board, pp, i);
 			break;
 		}
 	}
@@ -414,9 +414,70 @@ void player::remove_trails_and_rings(vector<vector<pos>>& board, vector<int>& mo
 }
 
 void player::remove_ring(vector<vector<pos>>& board, vector<int>& moves){
-	update_board();
+
+	update_board(board, 3, (my_ring_pos.back()).first, (my_ring_pos.back()).second, max_lim_p, max_lim_p, true);
 }
 
-void player::remove_repeated_trails(vector<vector<pos>>& board, pair<pair<int, int>, pair<int, int>> pp){
+void player::remove_repeated_trails(vector<vector<pos>>& board, pair<pair<int, int>, pair<int, int>> pp, int dir){
+	int x1, x2, y1, y2, len;
+	x1 = (pp.first).first;
+	y1 = (pp.first).second;
+	x2 = (pp.second).first;
+	y2 = (pp.second).second;
 	
+	if(dir == 0){
+		len = my_trails[0].size();
+		for(int i = 0; i< len; i++){
+			bool a1 = ((pp.first).first >= (my_trails[i].first).first) && ((pp.first).first <= (my_trails[i].second).first);
+			bool a2 = ((pp.second).first >= (my_trails[i].first).first) && ((pp.second).first <= (my_trails[i].second).first);
+			if(a1 || a2){
+				my_trails[0].erase(my_trails[0].begin() + i);
+			}
+		}
+		len = my_trails[1].size();
+		for(int i = 0; i< len; i++){
+			bool a1 = ((pp.first).second >= (my_trails[i].second).first) && ((pp.first).second <= (my_trails[i].second).second);
+			if(a1){
+				my_trails[1].erase(my_trails[1].begin() + i);
+			}
+		}	
+
+		///////////////////////////////// Get eq of line and find if both coordinates lie on opposite side
+
+		// len = my_trails[2].size();
+		// for(int i = 0; i< len; i++){
+		// 	bool a1 = ((pp.first).second >= (my_trails[i].second).first) && ((pp.first).second <= (my_trails[i].second).second);
+		// 	if(a1){
+		// 		my_trails[2].erase(my_trails[2].begin() + i);
+		// 	}
+		// }
+	}else if(dir == 1){
+		len = my_trails[1].size();
+		for(int i = 0; i< len; i++){
+			bool a1 = ((pp.first).second >= (my_trails[i].first).second) && ((pp.first).second <= (my_trails[i].second).second);
+			bool a2 = ((pp.second).second >= (my_trails[i].first).second) && ((pp.second).second <= (my_trails[i].second).second);
+			if(a1 || a2){
+				my_trails[1].erase(my_trails[1].begin() + i);
+			}
+		}
+		len = my_trails[0].size();
+		for(int i = 0; i< len; i++){
+			bool a1 = ((pp.second).second >= (my_trails[i].second).second) && ((pp.first).second <= (my_trails[i].second).second);
+			if(a1){
+				my_trails[0].erase(my_trails[0].begin() + i);
+			}
+		}	
+
+		///////////////////////////////// Get eq of line and find if both coordinates lie on opposite side
+
+		// len = my_trails[2].size();
+		// for(int i = 0; i< len; i++){
+		// 	bool a1 = ((pp.first).second >= (my_trails[i].second).first) && ((pp.first).second <= (my_trails[i].second).second);
+		// 	if(a1){
+		// 		my_trails[2].erase(my_trails[2].begin() + i);
+		// 	}
+		// }
+	}else {
+		
+	}
 }
