@@ -1,6 +1,9 @@
 #ifndef STRUCT_H
 #define STRUCT_H
 
+#include <string>
+using namespace std;
+
 struct pos{
     int marker, ring;
     bool valid;
@@ -19,10 +22,5 @@ struct pos{
     void setInvalid(){
         valid = false;
     }
-};
-
-union mov{
-    string move_t;
-    int coord;
 };
 #endif

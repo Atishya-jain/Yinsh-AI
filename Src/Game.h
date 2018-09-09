@@ -28,6 +28,8 @@ private:
 	double time_left; // Time left for our moves
 	bool train; // Set to true if training is going on
 	player my_player;
+	string int_to_move[6];
+	// 0 == P, 1 == S, 2 == M, 3 == RS, 4 == RE, 5 == X
 public:
 	// Constructors
 	game();

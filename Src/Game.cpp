@@ -22,7 +22,7 @@ void game::initialize_board(){
 	for(int i = 0; i<=mid; i++){
 		vector<pos> temp;
 		for(int j = 0; j<l1; j++){
-			if(j < mid - i){
+			if(j > mid + i){
 				// pos temp_pos(min_lim, max_lim, 2, false, false);
 				pos temp_pos(2, 2, false);
 				temp.push_back(temp_pos);
@@ -38,12 +38,12 @@ void game::initialize_board(){
 	for(int i = mid+1; i <l1; i++){
 		vector<pos> temp;	
 		for(int j = 0; j<l1; j++){
-			if(j < l1 - i + mid){
+			if(j < i - mid){
 				// pos temp_pos(j-mid, mid - i, 2, false, true);
-				pos temp_pos(2, 2, true);
+				pos temp_pos(2, 2, false);
 				temp.push_back(temp_pos);
 			}else{
-				pos temp_pos(2, 2, false);
+				pos temp_pos(2, 2, true);
 				// pos temp_pos(max_lim, min_lim, 2, false, false);
 				temp.push_back(temp_pos);				
 			}
@@ -51,13 +51,19 @@ void game::initialize_board(){
 		board.push_back(temp);	
 	}
 	board[num_rings][0].setInvalid();
-	board[l1-1][0].setInvalid();
+	board[0][0].setInvalid();
 	board[0][num_rings].setInvalid();
 	board[l1-1][num_rings].setInvalid();
-	board[0][l1-1].setInvalid();
+	board[0][0].setInvalid();
 	board[num_rings][l1-1].setInvalid();
 
 	my_player = player(num_rings, id, trail_length);
+	int_to_move[0] = "P";
+	int_to_move[1] = "S";
+	int_to_move[2] = "M";
+	int_to_move[3] = "RS";
+	int_to_move[4] = "RE";
+	int_to_move[5] = "X";
 	// cout << "Initialise board Done\n";	
 	if(id == 0){
 		// cout << "Start player 1\n";	
@@ -77,6 +83,8 @@ void game::my_coord_to_yinsh(pair<int, int>& ret_coord, int c, int v){
 	int h,p,x,y;
 	x = c-num_rings;
 	y = v-num_rings;
+	cerr << "x: " << x << endl;
+	cerr << "y: " << y << endl;
 
 	if(x*y<0){
 		h = abs(x)+abs(y);
@@ -137,8 +145,8 @@ void game::input(){
 	vector <string> splited;
 	splitString(s," ",splited);
 	int num_moves_in_input = splited.size()/3;
-	// cout << "num_moves_in_input: " << splited.size() << endl;
-	// cout << "num_moves_in_input: " << num_moves_in_input << endl;
+	// cerr << "num_moves_in_input: " << splited.size() << endl;
+	cerr << "num_moves_in_input: " << num_moves_in_input << endl;
 
 	string move_type;
 	int x1, y1, x2, y2, x3, y3;
@@ -152,19 +160,21 @@ void game::input(){
 			yinsh_coord_to_my(my_coord, x1, y1);
 			my_player.update_board(board, 0, my_coord.first, my_coord.second, max_lim, max_lim, false);
 		}else if(move_type.compare("S") == 0){
+			cerr << "Start1\n";
 			x1 = stoi(splited[3*i+1]);
 			y1 = stoi(splited[3*i+2]);	
 			yinsh_coord_to_my(my_coord, x1, y1);
+			cerr << "Start2\n";
 			// move the ring
 			// cout << "Let's move it\n";
 			x2 = stoi(splited[3*i+4]);
 			y2 = stoi(splited[3*i+5]);
-			// cout  << "Conversion again starts\n";
+			cerr  << "Conversion again starts\n";
 			yinsh_coord_to_my(my_coord2, x2, y2);
 			// cout << "Mine move coords: " << my_coord2.first << " " << my_coord2.second << endl;
-			// cout << "Move: " << endl;
+			cerr << "Move: " << endl;
 			my_player.update_board(board, 1, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second, false);
-			// cout << "Move Done\n";
+			cerr << "Move Done\n";
 			i++;
 		}else{
 			// remove markers
@@ -213,17 +223,24 @@ void game::initial_input(){
 void game::output(vector<int>& v){
 	string ans;
 	int len = v.size()/3;
+	cerr << "Length of output: " << len << endl;
 	pair <int, int> coords;
 	my_coord_to_yinsh(coords, v[1], v[2]);
-	ans = v[0].move_t;
+	ans = int_to_move[v[0]];
+	ans += " ";
 	ans += to_string(coords.first);
+	ans += " ";
 	ans += to_string(coords.second);
+	ans += " ";
 
 	for(int i = 1; i < len; i++){
 		my_coord_to_yinsh(coords, v[3*i+1], v[3*i+2]);
-		ans = v[3*i].move_t;
+		ans += int_to_move[v[3*i]];
+		ans += " ";
 		ans += to_string(coords.first);
+		ans += " ";
 		ans += to_string(coords.second);
+		ans += " ";
 	}
 	cout << ans << endl;
 	input();

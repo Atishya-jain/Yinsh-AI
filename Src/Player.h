@@ -41,7 +41,7 @@ public:
 	void remove_trails_and_rings(vector<vector<pos>>& board, vector<int>& moves);
 
 	void remove_ring(vector<vector<pos>>& board, vector<int>& moves);
-	void remove_repeated_trails(vector<vector<pos>>& board, pair<pair<int, int>, pair<int, int>> pp, int dir);
+	void remove_repeated_trails(vector<vector<pos>>& board, pair<pair<int, int>, pair<int, int>>& pp, int dir);
 };
 
 #endif
