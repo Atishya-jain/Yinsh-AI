@@ -229,8 +229,8 @@ void player::flip_markers(vector<vector<pos>>& board, int x1, int y1, int x2, in
 	if(x1 == x2){
 		startY = min(y1, y2);
 		endY = max(y1, y2);
-		check_my_trail(board, x1, startY, 0, my_turn);
-		check_my_trail(board, x1, startY, 2, my_turn);
+		check_my_trail(board, x1, y1, 0, my_turn);
+		check_my_trail(board, x1, y1, 2, my_turn);
 		for(int i = startY+1; i< endY; i++){
 			if(board[x1][i].marker != 2){
 				board[x1][i].set(1-board[x1][i].marker,2);
@@ -245,8 +245,8 @@ void player::flip_markers(vector<vector<pos>>& board, int x1, int y1, int x2, in
 	}else if(y1 == y2){
 		startX = min(x1, x2);
 		endX = max(x1, x2);
-		check_my_trail(board, startX, y1, 1, my_turn);
-		check_my_trail(board, startX, y1, 2, my_turn);
+		check_my_trail(board, x1, y1, 1, my_turn);
+		check_my_trail(board, x1, y1, 2, my_turn);
 		for(int i = startX+1; i< endX; i++){
 			if(board[i][y1].marker != 2){
 				board[i][y1].set(1-board[i][y1].marker,2);
@@ -263,8 +263,8 @@ void player::flip_markers(vector<vector<pos>>& board, int x1, int y1, int x2, in
 		startY = min(y1, y2);
 		endX = max(x1, x2);
 		endY = max(y1, y2);
-		check_my_trail(board, startX, startY, 0, my_turn);
-		check_my_trail(board, startX, startY, 1, my_turn);
+		check_my_trail(board, x1, y1, 0, my_turn);
+		check_my_trail(board, x1, y1, 1, my_turn);
 		for(int i = startX+1, j=startY+1; i< endX && j<endY ; i++,j++){
 			if(board[i][j].marker != 2){
 				board[i][j].set(1-board[i][j].marker,2);
@@ -334,7 +334,7 @@ int startX,startY,endX,endY, dir;
 void player::check_my_trail(vector<vector<pos>>& board, int x1, int y1, int dir, bool my_turn){
 	int count = 0;
 	int step_x, step_y, player, startX, startY;
-	bool trail = false;
+	bool trail = false; bool tempMade = false;
 	if(my_turn){
 		player = id;
 	}else{
@@ -352,35 +352,54 @@ void player::check_my_trail(vector<vector<pos>>& board, int x1, int y1, int dir,
 		startX = x1 - min(x1,y1); startY = y1 - min(x1, y1);
 	}
 	pair <pair<int,int>, pair<int,int>> temp, temp2;
-	for(int i = startX, j = startY; (i< board_size) && (j < board_size); i=i+step_x, j=j+step_y){
-		if(board[i][j].marker == player){
-			trail = true;
-			if(count == 0){
-				(temp.first).first = i;
-				(temp.first).second = j;
+	int i,j;
+	for(i = startX, j = startY; (i< board_size) && (j < board_size); i=i+step_x, j=j+step_y){
+		if(board[i][j].valid == true){
+			if(board[i][j].marker == player){
+				trail = true;
+				tempMade = false;
+				if(count == 0){
+					(temp.first).first = i;
+					(temp.first).second = j;
+				}
+				count++;	
+			}else if(board[i][j].marker == (1-player)){
+				trail = true;
+				if(count >= trail_length){
+					tempMade = true;
+					(temp.second).first = i-step_x;
+					(temp.second).second = j-step_y;
+					break;				
+				}
+				count = 0;
+			}else{			
+				if(count >= trail_length){
+					tempMade = true;
+					(temp.second).first = i-step_x;
+					(temp.second).second = j-step_y;
+				}
+				// if(trail){
+				// 	trail = false;
+				// 	break;
+				// }
+				count = 0;
+				trail = false;
+				// break;
 			}
-			count++;	
-		}else if(board[i][j].marker == (1-player)){
-			trail = true;
-			if(count >= trail_length){
-				(temp.second).first = i;
-				(temp.second).second = j;
+		}else{
+			if((count >= trail_length) && (tempMade == false)){
+				(temp.second).first = i-step_x;
+				(temp.second).second = j-step_y;
+				tempMade = true;
 				break;				
 			}
-			count = 0;
-		}else{			
-			if(count >= trail_length){
-				(temp.second).first = i;
-				(temp.second).second = j;
-			}
-			if(trail){
-				trail = false;
-				break;
-			}
-			trail = false;
-			// break;
 		}
 	}
+	if((tempMade == false) && (count >= trail_length)){
+		(temp.second).first = i-step_x;
+		(temp.second).second = j-step_y;		
+	}
+
 	if(count == trail_length){
 		if(my_turn){
 			my_trails[dir].push_back(temp);

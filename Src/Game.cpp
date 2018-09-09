@@ -51,7 +51,7 @@ void game::initialize_board(){
 		board.push_back(temp);	
 	}
 	board[num_rings][0].setInvalid();
-	board[0][0].setInvalid();
+	board[l1-1][l1-1].setInvalid();
 	board[0][num_rings].setInvalid();
 	board[l1-1][num_rings].setInvalid();
 	board[0][0].setInvalid();
