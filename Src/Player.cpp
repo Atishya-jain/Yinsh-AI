@@ -30,7 +30,7 @@ void player::make_next_move(vector<vector<pos>>& board, vector<int>& moves){
 
 		uniform_int_distribution<> distr2(0, my_ring_pos.size()-1);
 		int ring = distr2(eng);
-		cerr << "Ring Selected: " << ring << endl;
+		// cerr << "Ring Selected: " << ring << endl;
 
 		int initial_x = my_ring_pos[ring].first;
 		int initial_y = my_ring_pos[ring].second;
@@ -39,7 +39,7 @@ void player::make_next_move(vector<vector<pos>>& board, vector<int>& moves){
 		// Asking for my valid moves
 		get_valid_moves(board, all_valid_moves, ring, true);
 
-		cerr << "Valid moves done\n";
+		// cerr << "Valid moves done\n";
 		if(all_valid_moves.size() > 0){
 			uniform_int_distribution<> distr3(0, all_valid_moves.size()-1);
 			int index = distr3(eng);
@@ -71,8 +71,8 @@ void player::place_rings(vector<vector<pos>>& board, vector<int>& moves){
 	int y = distr(eng);
 	// pair<int,int> coords = my_coord_to_board(x,y,num_rings);
 	if((board[x][y].valid == true) && (board[x][y].ring == 2)){
-		board[x][y].set(2,true);
-		
+		// board[x][y].set(2,true);
+		update_board(board, 0, x, y, max_lim_p, max_lim_p, true);
 		mov movet, coord1, coord2;
 		movet.move_t = "P";
 		coord1.coord = x;
@@ -81,7 +81,7 @@ void player::place_rings(vector<vector<pos>>& board, vector<int>& moves){
 		moves.push_back(movet);
 		moves.push_back(coord1);
 		moves.push_back(coord2);
-		my_ring_pos.push_back(make_pair(x, y));
+		// my_ring_pos.push_back(make_pair(x, y));
 		// board[coords.first][coords.second].set(2, true);
 	}else{
 		place_rings(board, moves);
@@ -164,7 +164,17 @@ void player::update_board(vector<vector<pos>>& board, int action_on_ring, int in
 	}
 
 	if(action_on_ring == 0){
+		vector<pair<int,int>> temp;
 		board[initial_x][initial_y].set(2, player);
+		if(!my_turn){
+			temp.first = initial_x;
+			temp.second = initial_y;
+			opp_ring_pos.push_back(temp);
+		}else{
+			temp.first = initial_x;
+			temp.second = initial_y;
+			my_ring_pos.push_back(temp);
+		}		
 	}else if(action_on_ring == 1){
 		board[initial_x][initial_y].set(id, 2);
 		flip_markers(board, initial_x, initial_y, final_x, final_y, my_turn);		
@@ -173,8 +183,28 @@ void player::update_board(vector<vector<pos>>& board, int action_on_ring, int in
 		remove_markers(board, initial_x, initial_y, final_x, final_y, my_turn);
 	}else{
 		board[initial_x][initial_y].set(2, 2);
+		if(!my_turn){
+			int len = opp_ring_pos.size();
+			for(int i = 0; i<len; i++){
+				bool a1 = opp_ring_pos[i].first == initial_x;
+				bool a2 = opp_ring_pos[i].second == initial_y;
+				if(a1 && a2){
+					opp_ring_pos.erase(opp_ring_pos.begin() + i);
+				}
+			}
+		}else{
+			int len = my_ring_pos.size();
+			for(int i = 0; i<len; i++){
+				bool a1 = my_ring_pos[i].first == initial_x;
+				bool a2 = my_ring_pos[i].second == initial_y;
+				if(a1 && a2){
+					my_ring_pos.erase(my_ring_pos.begin() + i);
+				}
+			}
+		}
 	}
 }
+
 
 // Won't flip the marker at x2, y2 and x1,y1
 void player::flip_markers(vector<vector<pos>>& board, int x1, int y1, int x2, int y2, bool my_turn){
@@ -350,6 +380,43 @@ void player::check_my_trail(vector<vector<pos>>& board, int x1, int y1, int dir,
 	}
 }
 
-	void player::remove_trails_and_rings(vector<vector<pos>>& board, vector<int>& moves){
-
+void player::remove_trails_and_rings(vector<vector<pos>>& board, vector<int>& moves){
+	// For now its random
+	pair<pair<int, int>, pair<int, int>> pp;
+	mov movet1, coord1, coord2, movet2, coord3, coord4;
+	for(int i = 0; i< 3; i++){
+		if(my_trails[i].size() > 0){
+			(pp.first).first = (my_trails[i].first).first;
+			(pp.first).second = (my_trails[i].first).second;
+			(pp.second).first = (my_trails[i].second).first;
+			(pp.second).second = (my_trails[i].second).second;
+			movet1.move_t = "RS";
+			movet2.move_t = "RE";
+			coord1.coord = (pp.first).first;
+			coord2.coord = (pp.first).second;
+			coord3.coord = (pp.second).first;
+			coord4.coord = (pp.second).second;
+			moves.push_back(movet1); moves.push_back(coord1); moves.push_back(coord2);
+			moves.push_back(movet2); moves.push_back(coord3); moves.push_back(coord4);
+			update_board(board, 2, (my_trails[i].first).first, (my_trails[i].first).second, (my_trails[i].second).first, (my_trails[i].second).second, true);
+			remove_ring(board, moves);
+			remove_repeated_trails(board, pp);
+			break;
+		}
 	}
+
+	bool a1 = (my_trails[0] != 0);
+	bool a2 = (my_trails[1] != 0);
+	bool a3 = (my_trails[2] != 0);
+	if(a1 || a2 || a3){
+		remove_trails_and_rings(board, moves);
+	}
+}
+
+void player::remove_ring(vector<vector<pos>>& board, vector<int>& moves){
+	update_board();
+}
+
+void player::remove_repeated_trails(vector<vector<pos>>& board, pair<pair<int, int>, pair<int, int>> pp){
+	
+}

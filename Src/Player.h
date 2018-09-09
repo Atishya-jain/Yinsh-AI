@@ -39,6 +39,9 @@ public:
 	// Direction == 0 for along x-axis, 1 for y axis and 2 for parallel to x=y line
 	void check_my_trail(vector<vector<pos>>& board, int x1, int y1, int direction, bool my_turn);
 	void remove_trails_and_rings(vector<vector<pos>>& board, vector<int>& moves);
+
+	void remove_ring(vector<vector<pos>>& board, vector<int>& moves);
+	void remove_repeated_trails(vector<vector<pos>>& board, pair<pair<int, int>, pair<int, int>> pp);
 };
 
 #endif
