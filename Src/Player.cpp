@@ -10,11 +10,13 @@ player::player(){
 
 }
 
-player::player(int numr, int idd, int tl){
+player::player(int numr, int idd, int tl, int win){
 	num_rings_placed = 0;
+	num_rings_removed = 0;
 	num_rings = numr;
 	id = idd;
 	trail_length = tl;
+	to_win_remove = win;
 	board_size = 2*numr+1;
 	my_trails[0].clear();
 	my_trails[1].clear();
@@ -34,47 +36,47 @@ void player::make_next_move(vector<vector<pos>>& board, vector<int>& moves){
 			cerr << "Shouldn't be here\n";
 			remove_trails_and_rings(board, moves);
 		}
+		if(num_rings_removed < to_win_remove){
+			uniform_int_distribution<> distr2(0, my_ring_pos.size()-1);
+			int ring = distr2(eng);
+			cerr << "Ring Selected: " << ring << endl;
 
-		uniform_int_distribution<> distr2(0, my_ring_pos.size()-1);
-		int ring = distr2(eng);
-		cerr << "Ring Selected: " << ring << endl;
+			int initial_x = my_ring_pos[ring].first;
+			int initial_y = my_ring_pos[ring].second;
+			vector<pair<int,pair<int,int>>> all_valid_moves;
 
-		int initial_x = my_ring_pos[ring].first;
-		int initial_y = my_ring_pos[ring].second;
-		vector<pair<int,pair<int,int>>> all_valid_moves;
+			cerr << "Let's get valid moves\n";
+			// Asking for my valid moves
+			get_valid_moves(board, all_valid_moves, ring, true);
+			cerr << "Initial Moves done\n";
+			// cerr << "Valid moves done\n";
+			if(all_valid_moves.size() > 0){
+				uniform_int_distribution<> distr3(0, all_valid_moves.size()-1);
+				int index = distr3(eng);
+				cerr << "Let's update board\n";
+				cerr << "moves: " << (all_valid_moves[index].second).first << " " << (all_valid_moves[index].second).second << endl;
+				update_board(board, 1, initial_x, initial_y, (all_valid_moves[index].second).first, (all_valid_moves[index].second).second, true);
+				cerr << "update done\n";
+				// mov movet1, movet2, coord1, coord2, coord3, coord4;
+				// movet1.move_t = "S"; movet2.move_t = "M";
+				// coord1.coord = initial_x; coord2.coord = initial_y;
+				// coord3.coord = (all_valid_moves[index].second).first; coord4.coord = (all_valid_moves[index].second).second;
 
-		cerr << "Let's get valid moves\n";
-		// Asking for my valid moves
-		get_valid_moves(board, all_valid_moves, ring, true);
-		cerr << "Initial Moves done\n";
-		// cerr << "Valid moves done\n";
-		if(all_valid_moves.size() > 0){
-			uniform_int_distribution<> distr3(0, all_valid_moves.size()-1);
-			int index = distr3(eng);
-			cerr << "Let's update board\n";
-			cerr << "moves: " << (all_valid_moves[index].second).first << " " << (all_valid_moves[index].second).second << endl;
-			update_board(board, 1, initial_x, initial_y, (all_valid_moves[index].second).first, (all_valid_moves[index].second).second, true);
-			cerr << "update done\n";
-			// mov movet1, movet2, coord1, coord2, coord3, coord4;
-			// movet1.move_t = "S"; movet2.move_t = "M";
-			// coord1.coord = initial_x; coord2.coord = initial_y;
-			// coord3.coord = (all_valid_moves[index].second).first; coord4.coord = (all_valid_moves[index].second).second;
-
-			moves.push_back(1);
-			moves.push_back(initial_x);
-			moves.push_back(initial_y);
-			moves.push_back(2);
-			moves.push_back((all_valid_moves[index].second).first);
-			moves.push_back((all_valid_moves[index].second).second);
-			my_ring_pos[ring].first = (all_valid_moves[index].second).first;
-			my_ring_pos[ring].second = (all_valid_moves[index].second).second;
-			
-			cerr << "Let's remove trails\n";
-			remove_trails_and_rings(board, moves);
-			cerr << "Trails removed\n";
-		}
-		else{
-			make_next_move(board, moves);
+				moves.push_back(1);
+				moves.push_back(initial_x);
+				moves.push_back(initial_y);
+				moves.push_back(2);
+				moves.push_back((all_valid_moves[index].second).first);
+				moves.push_back((all_valid_moves[index].second).second);
+				my_ring_pos[ring].first = (all_valid_moves[index].second).first;
+				my_ring_pos[ring].second = (all_valid_moves[index].second).second;
+				
+				cerr << "Let's remove trails\n";
+				remove_trails_and_rings(board, moves);
+				cerr << "Trails removed\n";
+			}else{
+				make_next_move(board, moves);
+			}
 		}
 	}
 }
@@ -332,7 +334,7 @@ int startX,startY,endX,endY, dir;
 }
 
 void player::check_my_trail(vector<vector<pos>>& board, int x1, int y1, int dir, bool my_turn){
-	int count = 0;
+	int count = 0; int count2 = 0;
 	int step_x, step_y, player, startX, startY;
 	bool trail = false; bool tempMade = false;
 	if(my_turn){
@@ -369,6 +371,7 @@ void player::check_my_trail(vector<vector<pos>>& board, int x1, int y1, int dir,
 					tempMade = true;
 					(temp.second).first = i-step_x;
 					(temp.second).second = j-step_y;
+					count2 = count;
 					break;				
 				}
 				count = 0;
@@ -377,6 +380,7 @@ void player::check_my_trail(vector<vector<pos>>& board, int x1, int y1, int dir,
 					tempMade = true;
 					(temp.second).first = i-step_x;
 					(temp.second).second = j-step_y;
+					count2 = count;
 				}
 				// if(trail){
 				// 	trail = false;
@@ -400,13 +404,13 @@ void player::check_my_trail(vector<vector<pos>>& board, int x1, int y1, int dir,
 		(temp.second).second = j-step_y;		
 	}
 
-	if(count == trail_length){
+	if(count2 == trail_length){
 		if(my_turn){
 			my_trails[dir].push_back(temp);
 		}else{
 			opp_trails[dir].push_back(temp);
 		}
-	}else if(count > trail_length){
+	}else if(count2 > trail_length){
 		(temp2.second).first = (temp.second).first;
 		(temp2.second).second = (temp.second).second;
 		(temp2.first).first = (temp2.second).first - step_x*(trail_length-1);
@@ -454,12 +458,13 @@ void player::remove_trails_and_rings(vector<vector<pos>>& board, vector<int>& mo
 	bool a1 = (my_trails[0].size() != 0);
 	bool a2 = (my_trails[1].size() != 0);
 	bool a3 = (my_trails[2].size() != 0);
-	if(a1 || a2 || a3){
+	if((a1 || a2 || a3) && (num_rings_removed < to_win_remove)){
 		remove_trails_and_rings(board, moves);
 	}
 }
 
 void player::remove_ring(vector<vector<pos>>& board, vector<int>& moves){
+	num_rings_removed++;
 	moves.push_back(5); moves.push_back((my_ring_pos.back()).first); moves.push_back((my_ring_pos.back()).second);
 	update_board(board, 3, (my_ring_pos.back()).first, (my_ring_pos.back()).second, max_lim_p, max_lim_p, true);
 }

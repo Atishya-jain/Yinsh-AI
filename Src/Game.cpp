@@ -57,7 +57,7 @@ void game::initialize_board(){
 	board[0][0].setInvalid();
 	board[num_rings][l1-1].setInvalid();
 
-	my_player = player(num_rings, id, trail_length);
+	my_player = player(num_rings, id, trail_length, remove_win_rings);
 	int_to_move[0] = "P";
 	int_to_move[1] = "S";
 	int_to_move[2] = "M";

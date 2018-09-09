@@ -21,6 +21,8 @@ private:
 	int id;
 	int trail_length;
 	int board_size;
+	int num_rings_removed;
+	int to_win_remove;
 public:
 	vector<pair<pair<int, int>, pair<int, int>>> my_trails[3];
 	vector<pair<pair<int, int>, pair<int, int>>> opp_trails[3];
