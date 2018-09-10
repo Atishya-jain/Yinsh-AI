@@ -1,2 +1,0 @@
-marker trail has to be removed that are non-overlapping so that we can remove max rings
-I have used the assumption that in a row their can't be 2 consecutive trail_lengths i.e in a game of 5 a trail of 10 is not possible. This will be violated if input is not consistent with this.
