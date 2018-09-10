@@ -28,6 +28,8 @@ private:
 	double time_left; // Time left for our moves
 	bool train; // Set to true if training is going on
 	player my_player;
+	string int_to_move[6];
+	// 0 == P, 1 == S, 2 == M, 3 == RS, 4 == RE, 5 == X
 public:
 	// Constructors
 	game();
@@ -40,14 +42,9 @@ public:
 	void play();
 	
 	// Coordinate converters
-	pair<int, int> my_coord_to_yinsh(int x, int y);
-	pair<int, int> yinsh_coord_to_my(int ring, int pos);
-	
-	// Update the board state. action_on_ring == 0 for placing a ring, 1 for moving and 2 for removing markers, 3 for removing ring
-	void update_board(int action_on_ring, int initial_x, int initial_y, int final_x, int final_y);
-	void flip_markers(int x1, int y1, int x2, int y2);
-	void remove_markers(int start_x, int start_y, int end_x, int end_y);
-	
+	void my_coord_to_yinsh(pair<int, int>& ret_coord, int x, int y);
+	void yinsh_coord_to_my(pair<int, int>& ret_coord, int ring, int pos);
+		
 	// Initial Input of variables
 	void initial_input();
 	
