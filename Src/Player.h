@@ -28,7 +28,7 @@ public:
 	vector<pair<pair<int, int>, pair<int, int>>> opp_trails[3];
 
 	player();
-	player(int numr, int idd, int tl);
+	player(int numr, int idd, int tl, int win);
 	void make_next_move(vector<vector<pos>>& board, vector<int>& moves);
 	void place_rings(vector<vector<pos>>& board, vector<int>& moves);
 	void get_valid_moves(vector<vector<pos>>& board, vector<pair<int,pair<int,int>>>& all_valid_moves, int ring_index, bool my_turn);	

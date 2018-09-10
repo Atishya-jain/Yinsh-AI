@@ -476,59 +476,111 @@ void player::remove_repeated_trails(vector<vector<pos>>& board, pair<pair<int, i
 	x2 = (pp.second).first;
 	y2 = (pp.second).second;
 	
-	if(dir == 0){
-		len = my_trails[0].size();
-		for(int i = 0; i< len; i++){
-			bool a1 = ((pp.first).first >= (my_trails[0][i].first).first) && ((pp.first).first <= (my_trails[0][i].second).first);
-			bool a2 = ((pp.second).first >= (my_trails[0][i].first).first) && ((pp.second).first <= (my_trails[0][i].second).first);
-			if(a1 || a2){
-				my_trails[0].erase(my_trails[0].begin() + i);
-			}
-		}
-		len = my_trails[1].size();
-		for(int i = 0; i< len; i++){
-			bool a1 = ((pp.first).second >= (my_trails[1][i].second).first) && ((pp.first).second <= (my_trails[1][i].second).second);
-			if(a1){
-				my_trails[1].erase(my_trails[1].begin() + i);
-			}
-		}	
 
-		///////////////////////////////// Get eq of line and find if both coordinates lie on opposite side
-
-		// len = my_trails[2].size();
-		// for(int i = 0; i< len; i++){
-		// 	bool a1 = ((pp.first).second >= (my_trails[i].second).first) && ((pp.first).second <= (my_trails[i].second).second);
-		// 	if(a1){
-		// 		my_trails[2].erase(my_trails[2].begin() + i);
-		// 	}
-		// }
-	}else if(dir == 1){
-		len = my_trails[1].size();
-		for(int i = 0; i< len; i++){
-			bool a1 = ((pp.first).second >= (my_trails[1][i].first).second) && ((pp.first).second <= (my_trails[1][i].second).second);
-			bool a2 = ((pp.second).second >= (my_trails[1][i].first).second) && ((pp.second).second <= (my_trails[1][i].second).second);
-			if(a1 || a2){
-				my_trails[1].erase(my_trails[1].begin() + i);
-			}
-		}
-		len = my_trails[0].size();
-		for(int i = 0; i< len; i++){
-			bool a1 = ((pp.second).second >= (my_trails[0][i].second).second) && ((pp.first).second <= (my_trails[0][i].second).second);
-			if(a1){
-				my_trails[0].erase(my_trails[0].begin() + i);
-			}
-		}	
-
-		///////////////////////////////// Get eq of line and find if both coordinates lie on opposite side
-
-		// len = my_trails[2].size();
-		// for(int i = 0; i< len; i++){
-		// 	bool a1 = ((pp.first).second >= (my_trails[i].second).first) && ((pp.first).second <= (my_trails[i].second).second);
-		// 	if(a1){
-		// 		my_trails[2].erase(my_trails[2].begin() + i);
-		// 	}
-		// }
+	vector<pair<int,int>> expanded_pp;
+	//get pp size
+	int size_pp = 1+ (pp.second).second - (pp.first).second;
+	if(size_pp==1){
+		size_pp =  1+ (pp.second).first - (pp.first).first;
 	}
+	//expand pp
+	for(int i=0;i<size_pp;i++){
+		if (dir==0) expanded_pp.push_back(make_pair((pp.first).first+i,(pp.first).second));
+		else if(dir==1) expanded_pp.push_back(make_pair((pp.first).first,(pp.first).second+i));
+		else expanded_pp.push_back(make_pair((pp.first).first+i,(pp.first).second+i));
+	}
+
+	for(int i=0;i<3;i++){
+		len = my_trails[i].size();
+		for(int j=0;j<len;j++){
+			//get tmp size
+			int size_tmp =  1+ (my_trails[i][j].second).second - (my_trails[i][j].first).second;
+			if(size_tmp==1){
+				size_tmp =  1+ (my_trails[i][j].second).first - (my_trails[i][j].first).first;
+			}
+			//expand tmp
+			vector<pair<int,int>> expanded_tmp;
+			for(int k=0;i<size_tmp;i++){
+				if (i==0) expanded_tmp.push_back(make_pair((my_trails[i][j].first).first+k,(my_trails[i][j].first).second));
+				else if (i==1) expanded_tmp.push_back(make_pair((my_trails[i][j].first).first,(my_trails[i][j].first).second+k));
+				else expanded_tmp.push_back(make_pair((my_trails[i][j].first).first+k,(my_trails[i][j].first).second+k));
+			}
+			//check for matches
+			bool flag = false;
+			for(int k=0;k<size_pp;k++){
+				for(int l=0;l<size_tmp;l++){
+					if(expanded_pp[k].first==expanded_tmp[l].first && expanded_pp[k].second==expanded_tmp[l].second){
+						flag = true;
+						break;
+					}
+				}
+				if(flag) break;
+			}
+			if(flag) my_trails[i].erase(my_trails[i].begin() + j);
+		}
+	}
+
+
+
+
+
+
+
+
+	// if(dir == 0){
+	// 	len = my_trails[0].size();
+	// 	for(int i = 0; i< len; i++){
+	// 		bool a1 = ((pp.first).second == (my_trails[0][i].first).second) && ((pp.first).first >= (my_trails[0][i].first).first) && ((pp.first).first <= (my_trails[0][i].second).first);
+	// 		bool a2 = ((pp.first).second == (my_trails[0][i].first).second) && ((pp.second).first >= (my_trails[0][i].first).first) && ((pp.second).first <= (my_trails[0][i].second).first);
+	// 		if(a1 || a2){
+	// 			my_trails[0].erase(my_trails[0].begin() + i);
+	// 		}
+	// 	}
+	// 	len = my_trails[1].size();
+	// 	for(int i = 0; i< len; i++){
+	// 		bool a1 = ((pp.first).second >= (my_trails[1][i].second).second) && ((pp.first).second <= (my_trails[1][i].second).second);
+	// 		bool a1 = ((pp.first).second 
+	// 		if(a1){
+	// 			my_trails[1].erase(my_trails[1].begin() + i);
+	// 		}
+	// 	}	
+
+	// 	///////////////////////////////// Get eq of line and find if both coordinates lie on opposite side
+
+	// 	// len = my_trails[2].size();
+	// 	// for(int i = 0; i< len; i++){
+	// 	// 	bool a1 = ((pp.first).second >= (my_trails[i].second).first) && ((pp.first).second <= (my_trails[i].second).second);
+	// 	// 	if(a1){
+	// 	// 		my_trails[2].erase(my_trails[2].begin() + i);
+	// 	// 	}
+	// 	// }
+	// }else if(dir == 1){
+	// 	len = my_trails[1].size();
+	// 	for(int i = 0; i< len; i++){
+	// 		bool a1 = ((pp.first).second >= (my_trails[1][i].first).second) && ((pp.first).second <= (my_trails[1][i].second).second);
+	// 		bool a2 = ((pp.second).second >= (my_trails[1][i].first).second) && ((pp.second).second <= (my_trails[1][i].second).second);
+	// 		if(a1 || a2){
+	// 			my_trails[1].erase(my_trails[1].begin() + i);
+	// 		}
+	// 	}
+	// 	len = my_trails[0].size();
+	// 	for(int i = 0; i< len; i++){
+	// 		bool a1 = ((pp.second).second >= (my_trails[0][i].second).second) && ((pp.first).second <= (my_trails[0][i].second).second);
+	// 		if(a1){
+	// 			my_trails[0].erase(my_trails[0].begin() + i);
+	// 		}
+	// 	}	
+
+	// 	///////////////////////////////// Get eq of line and find if both coordinates lie on opposite side
+
+	// 	// len = my_trails[2].size();
+	// 	// for(int i = 0; i< len; i++){
+	// 	// 	bool a1 = ((pp.first).second >= (my_trails[i].second).first) && ((pp.first).second <= (my_trails[i].second).second);
+	// 	// 	if(a1){
+	// 	// 		my_trails[2].erase(my_trails[2].begin() + i);
+	// 	// 	}
+	// 	// }
+	// }
 	// else {
 
 	// }
