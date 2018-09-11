@@ -14,6 +14,7 @@ player::player(int numr, int idd, int tl, int win){
 	num_rings_placed = 0;
 	num_rings_removed = 0;
 	num_rings = numr;
+	DEPTH_TO_CHECK = 3;
 	id = idd;
 	trail_length = tl;
 	to_win_remove = win;
@@ -25,6 +26,56 @@ player::player(int numr, int idd, int tl, int win){
 	opp_trails[1].clear();
 	opp_trails[2].clear();
 }
+
+//MAYANK_BEGIN
+
+float player::heuristic(vector<vector<pos>>& board){
+	return 1.1;
+}
+
+//I think it should return <board, heuristic>
+pair<vector<vector<pos>>,float> player::MinVal(vector<vector<pos>>& board, int current_depth, float alpha, float beta){
+	if (current_depth == DEPTH_TO_CHECK)
+		return make_pair(board,heuristic(board));
+
+	vector<vector<pos>> tmp;
+	pair<vector<vector<pos>>,float> best_child = make_pair(tmp,99999999);
+	pair<vector<vector<pos>>,float> child;
+
+	for (s in children(state)){ //CHANGE_THIS
+		child = MaxVal(s,current_depth+1,alpha,beta);
+		beta = min(beta,child.second);
+		if (alpha>=beta) return child;
+		if (child.second < best_child.score){
+			best_child.first = child.first;
+			best_child.second = child.second;
+		}
+	}
+	return best_child; 
+}
+
+pair<vector<vector<pos>>,float> player::MaxVal(vector<vector<pos>>& board, int current_dept, float alpha, float beta){
+	if (current_depth == DEPTH_TO_CHECK)
+		return make_pair(board,heuristic(board));
+
+	vector<vector<pos>> tmp;
+	pair<vector<vector<pos>>,float> best_child = make_pair(tmp,-1);
+	pair<vector<vector<pos>>,float> child;
+
+	for (s in children(state)){ //CHANGE_THIS
+		child = MinVal(s,current_depth+1,alpha,beta);
+		alpha = max(alpha,child.second);
+		if (alpha>=beta) return child;
+		if (child.second > best_child.score){
+			best_child.first = child.first;
+			best_child.second = child.second;
+		}
+	}
+	return best_child; 
+}
+
+//MAYANK_END
+
 
 void player::make_next_move(vector<vector<pos>>& board, vector<int>& moves){
 	if(num_rings_placed < num_rings){

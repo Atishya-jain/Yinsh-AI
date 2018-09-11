@@ -23,6 +23,8 @@ private:
 	int board_size;
 	int num_rings_removed;
 	int to_win_remove;
+
+	int DEPTH_TO_CHECK;
 public:
 	vector<pair<pair<int, int>, pair<int, int>>> my_trails[3];
 	vector<pair<pair<int, int>, pair<int, int>>> opp_trails[3];
@@ -44,6 +46,11 @@ public:
 
 	void remove_ring(vector<vector<pos>>& board, vector<int>& moves);
 	void remove_repeated_trails(vector<vector<pos>>& board, pair<pair<int, int>, pair<int, int>>& pp, int dir);
+
+	float player::heuristic(vector<vector<pos>>& board);
+	pair<vector<vector<pos>>,float> player::MinVal(vector<vector<pos>>& board, int current_depth, float alpha, float beta);
+	pair<vector<vector<pos>>,float> player::MaxVal(vector<vector<pos>>& board, int current_depth, float alpha, float beta);
+
 };
 
 #endif
