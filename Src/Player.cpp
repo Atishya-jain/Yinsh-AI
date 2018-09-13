@@ -273,7 +273,41 @@ float player::heuristic(vector<vector<pos>>& board){
 }
 
 //I think it should return <board, heuristic>
-pair<int,float> player::MinVal(vector<vector<pos>>& board, int current_depth, float alpha, float beta){
+pair<int,float> player::MinVal(vector<vector<pos>>& board, int current_depth, float alpha, float beta, int rings_placed){
+	pair<int,float> child;
+	pair<int,float> best_child;
+	vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>> move;
+	if (rings_placed >= num_rings)
+		get_neighbours(board, opp_ring_pos, opp_trails, move, false);
+	else
+// void player::place_rings(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& move){
+		place_rings(board, opp_ring_pos, opp_trails, move);
+
+
+	for(int s=0;s<move.size();s++){
+// void player::play_move(vector<vector<pos>>& local_board, vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& moves, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], bool my_turn){
+
+		play_move(board, move[s].second, opp_ring_pos, opp_trails, false);
+	// for (int s = 0; s<10; s++s in children(state)){ //CHANGE_THIS
+		if (current_depth == DEPTH_TO_CHECK-1)
+			child = make_pair(s, move[s].first);
+		else{
+			int temp_rings_placed=rings_placed;
+			if (id==0) temp_rings_placed++;
+			child = MaxVal(board,current_depth+1,alpha,beta, temp_rings_placed);
+		}
+// void player::revert(vector<vector<pos>>& local_board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<int,int>>& local_ring_pos, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>& moves, bool my_turn){
+
+		revert(board, opp_trails, opp_ring_pos, move[s].second, false);
+
+		beta = min(beta,child.second);
+		if (alpha>=beta) return make_pair(s,child.second);
+		if (child.second < best_child.second){
+			best_child.first = s;
+			best_child.second = child.second;
+		}
+	}
+	return best_child; 
 	// if (current_depth == DEPTH_TO_CHECK)
 	// 	return make_pair(board,heuristic(board));
 
@@ -293,44 +327,74 @@ pair<int,float> player::MinVal(vector<vector<pos>>& board, int current_depth, fl
 	// return best_child; 
 }
 
-pair<int,float> player::MaxVal(vector<vector<pos>>& board, int current_dept, float alpha, float beta){
+pair<int,float> player::MaxVal(vector<vector<pos>>& board, int current_depth, float alpha, float beta, int rings_placed){
 	// if (current_depth == DEPTH_TO_CHECK)
-		// return make_pair(0,heuristic(board));
+	// 	return make_pair(0,heuristic(board));
 
 	// vector<vector<pos>> tmp;
 	// pair<vector<vector<pos>>,float> best_child = make_pair(tmp,-1);
-	// pair<vector<vector<pos>>,float> child;
+	pair<int,float> child;
+	pair<int,float> best_child;
+	vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>> move;
+	if (rings_placed >= num_rings)
+		get_neighbours(board, my_ring_pos, my_trails, move, true);
+	else
+// void player::place_rings(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& move){
+		place_rings(board, my_ring_pos, my_trails, move);
 
-	// for (int s = 0; s<10; s++/*s in children(state)*/){ //CHANGE_THIS
-	// 	child = MinVal(board,current_depth+1,alpha,beta);
-	// 	alpha = max(alpha,child.second);
-	// 	if (alpha>=beta) return child;
-	// 	if (child.second > best_child.score){
-	// 		best_child.first = child.first;
-	// 		best_child.second = child.second;
-	// 	}
-	// }
-	// return best_child; 
+
+	for(int s=0;s<move.size();s++){
+// void player::play_move(vector<vector<pos>>& local_board, vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& moves, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], bool my_turn){
+
+		play_move(board, move[s].second, my_ring_pos, my_trails, true);
+	// for (int s = 0; s<10; s++s in children(state)){ //CHANGE_THIS
+		if (current_depth == DEPTH_TO_CHECK-1)
+			child = make_pair(s, move[s].first);
+		else{
+			int temp_rings_placed=rings_placed;
+			if (id==1) temp_rings_placed++;
+			child = MinVal(board,current_depth+1,alpha,beta, temp_rings_placed);
+		}
+// void player::revert(vector<vector<pos>>& local_board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<int,int>>& local_ring_pos, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>& moves, bool my_turn){
+
+		revert(board, my_trails, my_ring_pos, move[s].second, true);
+
+		alpha = max(alpha,child.second);
+		if (alpha>=beta) return make_pair(s,child.second);
+		if (child.second > best_child.second){
+			best_child.first = s;
+			best_child.second = child.second;
+		}
+	}
+	return best_child; 
 }
 
 
 void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& out){
-	if(num_rings_placed < num_rings){
-		place_rings(board, local_ring_pos, local_trails, out);
-		num_rings_placed++;
-		cerr << "DDOONNEE\n";
-		// break;
-	}else{	
+	// if(num_rings_placed < num_rings){
+	// 	place_rings(board, local_ring_pos, local_trails, out);
+	// 	num_rings_placed++;
+	// 	cerr << "DDOONNEE\n";
+	// 	// break;
+	// }else{	
 		vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>> move;
 		
 		// int len = local_ring_pos.size();
-		get_neighbours(board, local_ring_pos, local_trails, move, true);
+		if (num_rings_placed >= num_rings)
+			get_neighbours(board, my_ring_pos, my_trails, move, true);
+		else
+// void player::place_rings(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& move){
+			place_rings(board, my_ring_pos, my_trails, move);
 		cerr << "Finally Neighbours received and num valid moves: " << move.size() << endl;
+// pair<int,float> player::MaxVal(vector<vector<pos>>& board, int current_depth, float alpha, float beta, int rings_placed){
+		int best_move_index = MaxVal(board, 0, max_lim_p, min_lim_p, num_rings_placed).first;
 
 		// cerr << "Final Coordinates: " << move[0].second
-		play_move(board, move[0].second, local_ring_pos, local_trails, true);
+		play_move(board, move[best_move_index].second, local_ring_pos, local_trails, true);
 		cerr << "Finally move done\n";
-		out = move[0].second;
+		out = move[best_move_index].second;
+
+		if (num_rings_placed < num_rings) num_rings_placed++;
 		
 
 
@@ -382,30 +446,34 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 	// 			make_next_move(board, moves);
 	// 		}
 	// 	}
-	}
+	// }
 }
 
-void player::place_rings(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& moves){
+void player::place_rings(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& move){
 	uniform_int_distribution<> distr(0, board_size-1); // define the range
 	int x = distr(eng);
 	int y = distr(eng);
 	// pair<int,int> coords = my_coord_to_board(x,y,num_rings);
 	if((board[x][y].valid == true) && (board[x][y].ring == 2)){
 		// board[x][y].set(2,true);
-		update_board(board, local_ring_pos, local_trails, 0, x, y, max_lim_p, max_lim_p, true);
+		// update_board(board, local_ring_pos, local_trails, 0, x, y, max_lim_p, max_lim_p, true);
 		// mov movet, coord1, coord2;
 		// movet.move_t = "P";
 		// coord1.coord = x;
 		// coord2.coord = y;
 		// pair <int, pair<int,int>,pair<int,int>> p = make_pair(0,make_pair(make_pair(x,y),make_pair(max_lim_p,max_lim_p)));
-		moves.push_back(make_pair(0,make_pair(make_pair(x,y),make_pair(max_lim_p,max_lim_p))));
+		// vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& move
+		// move.push_back(make_pair(0,make_pair(make_pair(x,y),make_pair(max_lim_p,max_lim_p))));
+		vector<pair<int, pair<pair<int,int>,pair<int,int>>>> tmp;
+		tmp.push_back(make_pair(0,make_pair(make_pair(x,y),make_pair(max_lim_p,max_lim_p))));
+		move.push_back(make_pair(1.1, tmp));
 		// moves.push_back(0);
 		// moves.push_back(x);
 		// moves.push_back(y);
 		// my_ring_pos.push_back(make_pair(x, y));
 		// board[coords.first][coords.second].set(2, true);
 	}else{
-		place_rings(board, local_ring_pos, local_trails, moves);
+		place_rings(board, local_ring_pos, local_trails, move);
 	}
 }
 
