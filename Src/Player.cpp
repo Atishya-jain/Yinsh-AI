@@ -69,6 +69,7 @@ void player::get_all_removes(vector<vector<pos>>& local_board, vector<pair<int,p
 				if(((temp_trails2[0].size() != 0) || (temp_trails2[1].size() != 0) || (temp_trails2[2].size() != 0)) && (local_ring_pos.size() > num_rings-to_win_remove)){
 					cerr << "Going into recursion\n";
 					get_all_removes(local_board, one_remove, valid_removes, local_ring_pos, temp_trails2, my_turn);
+					cerr << "Go back to place markers\n";
 					update_board(local_board, local_ring_pos, temp_trails2, 4, ((one_remove[one_remove.size()-1].second).first).first, ((one_remove[one_remove.size()-1].second).first).second, ((one_remove[one_remove.size()-1].second).second).first, ((one_remove[one_remove.size()-1].second).second).second, my_turn);
 					// one_remove.erase(one_remove.size()-1);
 					one_remove.erase(one_remove.end()-1);
@@ -78,7 +79,7 @@ void player::get_all_removes(vector<vector<pos>>& local_board, vector<pair<int,p
 					vector<pair<int,pair<pair<int,int>,pair<int,int>>>> to_revert;
 					to_revert.push_back(one_remove[one_remove.size()-1]);
 					revert(local_board, temp_trails2, local_ring_pos, to_revert, my_turn);
-					cerr << "Size of one";
+					cerr << "Size of one\n";
 					valid_removes.push_back(one_remove);
 					one_remove.erase(one_remove.end()-1);
 				}
@@ -192,30 +193,42 @@ void player::concatenate(vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& va
 void player::play(vector<vector<pos>>& local_board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<int,int>>& local_ring_pos, vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& move, int ring_index, pair<int,pair<int,int>> valid_moves, bool my_turn, int& num_moves){
 	cerr << "Inside play\n";
 	cerr << "Coordinates: " << local_ring_pos[ring_index].first << " " << local_ring_pos[ring_index].second << " " << (valid_moves.second).first << " " << (valid_moves.second).second << endl;
-	update_board(local_board, local_ring_pos, local_trails, 1, local_ring_pos[ring_index].first, local_ring_pos[ring_index].second, (valid_moves.second).first, (valid_moves.second).second, my_turn);
 	vector<pair<int, pair<pair<int,int>,pair<int,int>>>> temp;
 	temp.push_back(make_pair(1, make_pair(make_pair(local_ring_pos[ring_index].first,local_ring_pos[ring_index].second), make_pair((valid_moves.second).first,(valid_moves.second).second))));
+	update_board(local_board, local_ring_pos, local_trails, 1, local_ring_pos[ring_index].first, local_ring_pos[ring_index].second, (valid_moves.second).first, (valid_moves.second).second, my_turn);
+
 	vector<vector<pair<int,pair<pair<int,int>,pair<int,int>>>>> valid_removes;
 	vector<pair<int,pair<pair<int,int>,pair<int,int>>>> one_remove;
 	cerr << "After move remove?\n";
 	cerr << "local_trails size: " << local_trails[0].size() << " " << local_trails[1].size() << " " << local_trails[2].size() << " \n"; 
 	get_all_removes(local_board, one_remove, valid_removes, local_ring_pos, local_trails, my_turn);
+	// vector<pair<pair<int, int>, pair<int, int>>> temp_trails2[3];
+	// copy(local_trails[0].begin(), local_trails[0].end(), back_inserter(temp_trails2[0]));
+	// copy(local_trails[1].begin(), local_trails[1].end(), back_inserter(temp_trails2[1]));
+	// copy(local_trails[2].begin(), local_trails[2].end(), back_inserter(temp_trails2[2]));
 	if(valid_removes.size() > 0){
 		cerr << "yes some removes\n";
 		num_moves = valid_removes.size();
 		// int len = valid_moves.size();
 		for(int i = 0; i<num_moves; i++){
+			cout << "In some remove loop\n";
 			vector<pair<pair<int, int>, pair<int, int>>> temp_trails[3];
-			temp_trails[0] = local_trails[0];
-			temp_trails[1] = local_trails[1];
-			temp_trails[2] = local_trails[2];
+			copy(local_trails[0].begin(), local_trails[0].end(), back_inserter(temp_trails[0]));
+			copy(local_trails[1].begin(), local_trails[1].end(), back_inserter(temp_trails[1]));
+			copy(local_trails[2].begin(), local_trails[2].end(), back_inserter(temp_trails[2]));
+
+			// temp_trails[0] = local_trails[0];
+			// temp_trails[1] = local_trails[1];
+			// temp_trails[2] = local_trails[2];
+			cerr << "Play one remove \n";
 			play_move(local_board, valid_removes[i], local_ring_pos, temp_trails, my_turn);
 			vector<pair<int, pair<pair<int,int>,pair<int,int>>>> temp2;
 			temp2 = temp;
 			temp2.insert(temp2.end(), valid_removes[i].begin(), valid_removes[i].end());
-			for(int j = 0; j<valid_removes[i].size(); j=j++){	
-				update_board(local_board, local_ring_pos, temp_trails, valid_removes[i][j].first, ((valid_removes[i][j].second).first).first, ((valid_removes[i][j].second).first).second, ((valid_removes[i][j].second).second).first, ((valid_removes[i][j].second).second).second, my_turn);
-			}
+			// for(int j = 0; j<valid_removes[i].size(); j=j++){	
+			// 	update_board(local_board, local_ring_pos, temp_trails, valid_removes[i][j].first, ((valid_removes[i][j].second).first).first, ((valid_removes[i][j].second).first).second, ((valid_removes[i][j].second).second).first, ((valid_removes[i][j].second).second).second, my_turn);
+			// }
+			cerr << "after updating board\n";
 			// remove_trails_and_rings(board, rem_rings, local_trails, moves);
 			float h; 
 			if(local_ring_pos.size() <= (num_rings-to_win_remove)){
@@ -243,6 +256,7 @@ void player::play(vector<vector<pos>>& local_board, vector<pair<pair<int, int>, 
 			// }
 			move.push_back(make_pair(h, temp));
 	}
+	cerr << "After all jhanjhat\n";
 	revert(local_board, local_trails, local_ring_pos, temp, my_turn);
 }
 
@@ -485,9 +499,20 @@ void player::update_board(vector<vector<pos>>& board, vector<pair<int,int>>& loc
 	}else if(action_on_ring == 1){
 		board[initial_x][initial_y].set(player, 2);
 		cerr << "Flip Markers Start\n";
+		cerr << "local_trails size before flip: " << local_trails[0].size() << " " << local_trails[1].size() << " " << local_trails[2].size() << " \n"; 
 		flip_markers(board, local_trails, initial_x, initial_y, final_x, final_y, my_turn);		
+		cerr << "local_trails size after flip: " << local_trails[0].size() << " " << local_trails[1].size() << " " << local_trails[2].size() << " \n"; 
 		cerr << "Flip end\n";
+
 		board[final_x][final_y].set(2, player);
+
+		for(int i = 0; i<num_rings; i++){
+			if((local_ring_pos[i].first == initial_x) || (local_ring_pos[i].second == initial_y)){
+				local_ring_pos[i].first = final_x;
+				local_ring_pos[i].second = final_y;
+				break;
+			}
+		}
 	}else if(action_on_ring == 2){
 		remove_markers(board, local_trails, initial_x, initial_y, final_x, final_y, my_turn);
 	}else if(action_on_ring == 3){

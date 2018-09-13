@@ -184,8 +184,10 @@ void game::input(){
 			x2 = stoi(splited[3*i+4]);
 			y2 = stoi(splited[3*i+5]);
 			yinsh_coord_to_my(my_coord2, x2, y2);
+			cerr << "Removal of markers start:\n";
 			my_player.update_board(board, my_player.opp_ring_pos, my_player.opp_trails, 2, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second, false);
 			pair<pair<int, int>, pair<int, int>> pp = make_pair(make_pair(my_coord.first,my_coord.second), make_pair(my_coord2.first,my_coord2.second));
+			cerr << "Repeated removal starts: \n";
 			if(my_coord.second == my_coord2.second){
 				my_player.remove_repeated_trails(board, my_player.opp_ring_pos, my_player.opp_trails, pp, 0);
 			}else if(my_coord.first == my_coord2.first){
@@ -193,12 +195,14 @@ void game::input(){
 			}else{
 				my_player.remove_repeated_trails(board, my_player.opp_ring_pos, my_player.opp_trails, pp, 2);
 			}
-
+			cerr << "Repeated also finishes!!!\n";
 			// remove ring
 			x1 = stoi(splited[3*i+7]);
 			y1 = stoi(splited[3*i+8]);
 			yinsh_coord_to_my(my_coord, x1, y1);
+
 			my_player.update_board(board, my_player.opp_ring_pos, my_player.opp_trails, 3, my_coord.first, my_coord.second, max_lim, max_lim, false);
+			cerr << "Done this move\n";
 			i = i+2;
 		}	
 		i++;
