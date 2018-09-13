@@ -47,9 +47,16 @@ public:
 	void remove_ring(vector<vector<pos>>& board, int &rem_rings, vector<pair<int,int>>& local_ring_pos, vector<int>& moves);
 	void remove_repeated_trails(vector<vector<pos>>& board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], pair<pair<int, int>, pair<int, int>>& pp, int dir);
 
-	float player::heuristic(vector<vector<pos>>& board);
-	pair<vector<vector<pos>>,float> player::MinVal(vector<vector<pos>>& board, int current_depth, float alpha, float beta);
-	pair<vector<vector<pos>>,float> player::MaxVal(vector<vector<pos>>& board, int current_depth, float alpha, float beta);
+	float heuristic(vector<vector<pos>>& board);
+	pair<vector<vector<pos>>,float> MinVal(vector<vector<pos>>& board, int current_depth, float alpha, float beta);
+	pair<vector<vector<pos>>,float> MaxVal(vector<vector<pos>>& board, int current_depth, float alpha, float beta);
+
+	void get_all_removes(vector<vector<pos>>& local_board, vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& one_remove, vector<vector<pair<int,pair<pair<int,int>,pair<int,int>>>>>& valid_removes, vector<pair<int,int>> local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], bool my_turn);
+	void get_neighbours(vector<vector<pos>> local_board, int& rem_rings, vector<pair<int,int>> local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& move, bool my_turn);
+	void revert(vector<vector<pos>>& local_board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<int,int>>& local_ring_pos, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>& moves, bool my_turn);
+	void concatenate(vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& valid_removes, vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& moves, int& num_moves);
+	void play(vector<vector<pos>>& local_board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], int& rem_rings, vector<pair<int,int>>& local_ring_pos, vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& move, int ring_index, pair<int,pair<int,int>> valid_moves, bool my_turn, int& num_moves);
+	void play_move(vector<vector<pos>>& local_board, vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& moves, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], bool my_turn);
 
 };
 
