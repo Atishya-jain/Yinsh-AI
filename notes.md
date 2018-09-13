@@ -1,7 +1,7 @@
 1. Atishya says, he has used the constant 5 instead of trail_length
-2. marker trail has to be removed that are non-overlapping so that we can remove max rings
+2. marker trail has to be removed that are non-overlapping so that we can remove max rings (Done)
 3. I have used the assumption that in a row their can't be 2 consecutive trail_lengths i.e in a game of 5 a trail of 10 is not possible. This will be violated if input is not consistent with this.
-4. Manage (erase) opponent trails
+4. Manage (erase) opponent trails. (Done)
 
 
 Structure of the value returned by Ati:-
@@ -33,3 +33,6 @@ As white, you should put your rings in mobile positions, not on the same lines a
 12. An expert knows what to look at - the rings. It is the rings which control areas and pieces, and block the opponent's control of same. It is the rings which extent your pieces into rows, and cut or block your opponent's rows. 
 13. Laying markers in short rows of 2's and 3's is rarely a good idea in the beginning
 14. Don't work on building rows at those places which can easily be destroyed by the opponent
+
+
+1. Make a real pointer based tree for saving intermediate trees

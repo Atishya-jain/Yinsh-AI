@@ -75,8 +75,8 @@ void game::initialize_board(){
 }
 
 void game::play(){
-	vector<int> moves;
-	my_player.make_next_move(board, moves);
+	vector<pair<int,pair<pair<int,int>,pair<int,int>>>> moves;
+	my_player.make_next_move(board, my_player.my_ring_pos, my_player.my_trails, moves);
 	output(moves);
 }
 void game::my_coord_to_yinsh(pair<int, int>& ret_coord, int c, int v){
@@ -158,7 +158,7 @@ void game::input(){
 			x1 = stoi(splited[3*i+1]);
 			y1 = stoi(splited[3*i+2]);	
 			yinsh_coord_to_my(my_coord, x1, y1);
-			my_player.update_board(board, 0, my_coord.first, my_coord.second, max_lim, max_lim, false);
+			my_player.update_board(board, my_player.opp_ring_pos, my_player.opp_trails, 0, my_coord.first, my_coord.second, max_lim, max_lim, false);
 		}else if(move_type.compare("S") == 0){
 			cerr << "Start1\n";
 			x1 = stoi(splited[3*i+1]);
@@ -173,7 +173,7 @@ void game::input(){
 			yinsh_coord_to_my(my_coord2, x2, y2);
 			// cout << "Mine move coords: " << my_coord2.first << " " << my_coord2.second << endl;
 			cerr << "Move: " << endl;
-			my_player.update_board(board, 1, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second, false);
+			my_player.update_board(board, my_player.opp_ring_pos, my_player.opp_trails, 1, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second, false);
 			cerr << "Move Done\n";
 			i++;
 		}else{
@@ -184,13 +184,21 @@ void game::input(){
 			x2 = stoi(splited[3*i+4]);
 			y2 = stoi(splited[3*i+5]);
 			yinsh_coord_to_my(my_coord2, x2, y2);
-			my_player.update_board(board, 2, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second, false);
-			
+			my_player.update_board(board, my_player.opp_ring_pos, my_player.opp_trails, 2, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second, false);
+			pair<pair<int, int>, pair<int, int>> pp = make_pair(make_pair(my_coord.first,my_coord.second), make_pair(my_coord2.first,my_coord2.second));
+			if(my_coord.second == my_coord2.second){
+				my_player.remove_repeated_trails(board, my_player.opp_ring_pos, my_player.opp_trails, pp, 0);
+			}else if(my_coord.first == my_coord2.first){
+				my_player.remove_repeated_trails(board, my_player.opp_ring_pos, my_player.opp_trails, pp, 1);
+			}else{
+				my_player.remove_repeated_trails(board, my_player.opp_ring_pos, my_player.opp_trails, pp, 2);
+			}
+
 			// remove ring
 			x1 = stoi(splited[3*i+7]);
 			y1 = stoi(splited[3*i+8]);
 			yinsh_coord_to_my(my_coord, x1, y1);
-			my_player.update_board(board, 3, my_coord.first, my_coord.second, max_lim, max_lim, false);
+			my_player.update_board(board, my_player.opp_ring_pos, my_player.opp_trails, 3, my_coord.first, my_coord.second, max_lim, max_lim, false);
 			i = i+2;
 		}	
 		i++;
@@ -220,27 +228,75 @@ void game::initial_input(){
 	trail_length = 5;
 	// cout << "Initial Input done\n" << endl;
 }
-void game::output(vector<int>& v){
+void game::output(vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& v){
 	string ans;
-	int len = v.size()/3;
-	cerr << "Length of output: " << len << endl;
+	int len = v.size();
+	cerr << "Length of final output: " << len << endl;
 	pair <int, int> coords;
-	my_coord_to_yinsh(coords, v[1], v[2]);
-	ans = int_to_move[v[0]];
-	ans += " ";
-	ans += to_string(coords.first);
-	ans += " ";
-	ans += to_string(coords.second);
-	ans += " ";
 
-	for(int i = 1; i < len; i++){
-		my_coord_to_yinsh(coords, v[3*i+1], v[3*i+2]);
-		ans += int_to_move[v[3*i]];
-		ans += " ";
-		ans += to_string(coords.first);
-		ans += " ";
-		ans += to_string(coords.second);
-		ans += " ";
+	// my_coord_to_yinsh(coords, v[1], v[2]);
+	ans = "";
+	// ans = int_to_move[v[0]];
+	// ans += " ";
+	// ans += to_string(coords.first);
+	// ans += " ";
+	// ans += to_string(coords.second);
+	// ans += " ";
+
+	for(int i = 0; i < len; i++){
+		if(v[i].first == 0){
+			ans += "P";
+			my_coord_to_yinsh(coords, ((v[i].second).first).first, ((v[i].second).first).second);
+			ans += " ";
+			ans += to_string(coords.first);
+			ans += " ";
+			ans += to_string(coords.second);
+			ans += " ";
+		}else if(v[i].first == 1){
+			ans += "S";
+			my_coord_to_yinsh(coords, ((v[i].second).first).first, ((v[i].second).first).second);
+			ans += " ";
+			ans += to_string(coords.first);
+			ans += " ";
+			ans += to_string(coords.second);
+			ans += " ";
+			ans += "M";
+			my_coord_to_yinsh(coords, ((v[i].second).second).first, ((v[i].second).second).second);
+			ans += " ";
+			ans += to_string(coords.first);
+			ans += " ";
+			ans += to_string(coords.second);
+			ans += " ";
+		}else if(v[i].first == 2){
+			ans += "RS";
+			my_coord_to_yinsh(coords, ((v[i].second).first).first, ((v[i].second).first).second);
+			ans += " ";
+			ans += to_string(coords.first);
+			ans += " ";
+			ans += to_string(coords.second);
+			ans += " ";
+			ans += "RE";
+			my_coord_to_yinsh(coords, ((v[i].second).second).first, ((v[i].second).second).second);
+			ans += " ";
+			ans += to_string(coords.first);
+			ans += " ";
+			ans += to_string(coords.second);
+			ans += " ";			
+		}else{
+			ans += "X";
+			my_coord_to_yinsh(coords, ((v[i].second).first).first, ((v[i].second).first).second);
+			ans += " ";
+			ans += to_string(coords.first);
+			ans += " ";
+			ans += to_string(coords.second);
+			ans += " ";						
+		}
+		// ans += int_to_move[v[3*i]];
+		// ans += " ";
+		// ans += to_string(coords.first);
+		// ans += " ";
+		// ans += to_string(coords.second);
+		// ans += " ";
 	}
 	cout << ans << endl;
 	input();

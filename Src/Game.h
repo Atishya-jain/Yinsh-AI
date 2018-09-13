@@ -52,7 +52,7 @@ public:
 	void input();
 
 	// Output my move to stdout
-	void output(vector<int>& v);
+	void output(vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& v);
 };
 
 #endif
