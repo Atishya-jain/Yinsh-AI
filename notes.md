@@ -36,3 +36,4 @@ As white, you should put your rings in mobile positions, not on the same lines a
 
 
 1. Make a real pointer based tree for saving intermediate trees
+2. Local ring pos condition check of game done on line 118

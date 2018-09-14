@@ -147,7 +147,7 @@ void game::input(){
 	int num_moves_in_input = splited.size()/3;
 	// cerr << "num_moves_in_input: " << splited.size() << endl;
 	cerr << "num_moves_in_input: " << num_moves_in_input << endl;
-
+	cerr << "Input Move:**************** " << s << endl;
 	string move_type;
 	int x1, y1, x2, y2, x3, y3;
 	int i = 0;
