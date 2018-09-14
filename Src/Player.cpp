@@ -100,7 +100,8 @@ void player::get_neighbours(vector<vector<pos>> local_board, vector<pair<int,int
 	// int siz = local_trails[0].size() + local_trails[1].size() + local_trails[2].size();
 	vector<pair<int,pair<pair<int,int>,pair<int,int>>>> one_remove;
 	cerr << "Inside Get neighbours\n";
-	get_all_removes(local_board, one_remove, valid_removes, local_ring_pos, local_trails, my_turn);	
+	get_all_removes(local_board, one_remove, valid_removes, local_ring_pos, local_trails, my_turn);// Gets all possible remove sequences if exist
+
 	cerr << "Size of valid_removes: " << valid_removes.size() << endl;
 	if(valid_removes.size() > 0){
 		cerr << "Why is it here?\n";
@@ -211,7 +212,7 @@ void player::play(vector<vector<pos>>& local_board, vector<pair<pair<int, int>, 
 		num_moves = valid_removes.size();
 		// int len = valid_moves.size();
 		for(int i = 0; i<num_moves; i++){
-			cout << "In some remove loop\n";
+			cerr << "In some remove loop\n";
 			vector<pair<pair<int, int>, pair<int, int>>> temp_trails[3];
 			copy(local_trails[0].begin(), local_trails[0].end(), back_inserter(temp_trails[0]));
 			copy(local_trails[1].begin(), local_trails[1].end(), back_inserter(temp_trails[1]));
@@ -377,6 +378,11 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 	// 	cerr << "DDOONNEE\n";
 	// 	// break;
 	// }else{	
+	
+
+		// int best_move_index = MaxVal(board, 0, min_lim_p, max_lim_p, num_rings_placed).first;
+		int best_move_index = 0;
+		// cerr << "Move: " << best_move_index;
 		vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>> move;
 		
 		// int len = local_ring_pos.size();
@@ -386,10 +392,6 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 			place_rings(board, my_ring_pos, my_trails, move);
 
 		cerr << "Finally Neighbours received and num valid moves: " << move.size() << endl;
-
-		int best_move_index = MaxVal(board, 0, min_lim_p, max_lim_p, num_rings_placed).first;
-
-		// cerr << "Move: " << best_move_index;
 		play_move(board, move[best_move_index].second, local_ring_pos, local_trails, true);
 		cerr << "Index best move: " << best_move_index << endl;
 		
