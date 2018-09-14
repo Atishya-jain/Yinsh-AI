@@ -22,5 +22,8 @@ struct pos{
     void setInvalid(){
         valid = false;
     }
+
+    static bool sortinrev(const pair<int,vector<pair<int, pair<pair<int,int>,pair<int,int>>>>> &a, const pair<int,vector<pair<int, pair<pair<int,int>,pair<int,int>>>>> &b);
+
 };
 #endif
