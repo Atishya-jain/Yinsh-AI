@@ -429,9 +429,24 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 		{
 			for (int j = 0; j < 11; ++j)
 			{
-				cerr << board[i][j].marker << " ";
+				cerr << board[j][i].marker << " ";
 			}cerr << endl;
 		}cerr << endl;
+
+
+
+		// cerr << board.size() << endl;
+		for (int i = 0; i < 11; ++i)
+		{
+			for (int j = 0; j < 11; ++j)
+			{
+				cerr << board[j][i].ring << " ";
+			}cerr << endl;
+		}cerr << endl;
+
+		for(int i = 0; i<local_ring_pos.size(); i++){
+			cerr << "Ring Position: " << i << "Coordinate: " << local_ring_pos[i].first << " " << local_ring_pos[i].second << endl;
+		}		
 
 		cerr << "Move from neighbours: " << ((move[best_move_index].second)[0].second).first.first << ((move[best_move_index].second)[0].second).first.second << endl;// <<  ((move[best_move_index].second)[0].second).first;
 		out = move[best_move_index].second;
@@ -825,9 +840,11 @@ int startX,startY,endX,endY, dir, player;
 }
 
 void player::check_my_trail(vector<vector<pos>>& board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], int x1, int y1, int dir, bool my_turn){
+	cerr << "In check_my_trail\n";
 	int count = 0; int count2 = 0;
 	int step_x, step_y, player, startX, startY;
 	bool trail = false; bool tempMade = false;
+	cerr << "My_turn: " << my_turn << endl;
 	if(my_turn){
 		player = id;
 	}else{
@@ -885,14 +902,21 @@ void player::check_my_trail(vector<vector<pos>>& board, vector<pair<pair<int, in
 			if((count >= trail_length) && (tempMade == false)){
 				(temp.second).first = i-step_x;
 				(temp.second).second = j-step_y;
+				count2 = count;
 				tempMade = true;
 				break;				
 			}
 		}
 	}
+	cerr << "Count in trail: " << count << endl;
+	cerr << "Count2 in trail: " << count2 << endl;
+	cerr << "tempMade in trail: " << tempMade << endl;
+	cerr << "i in trail: " << i << endl;
+	cerr << "j in trail: " << j << endl;
 	if((tempMade == false) && (count >= trail_length)){
 		(temp.second).first = i-step_x;
-		(temp.second).second = j-step_y;		
+		(temp.second).second = j-step_y;
+		count2 = count;		
 	}
 
 	if(count2 == trail_length){
