@@ -19,7 +19,7 @@ player::player(int numr, int idd, int tl, int win){
 	num_rings_placed = 0;
 	num_rings_removed = 0;
 	num_rings = numr;
-	DEPTH_TO_CHECK = 3;
+	DEPTH_TO_CHECK = 1;
 	id = idd;
 	trail_length = tl;
 	to_win_remove = win;
@@ -547,7 +547,7 @@ float player::check_ring_adjacent_trails(vector<vector<pos>>& board, vector<pair
 			for(int k=0;k<step_y_set.size();k++){
 				int last_marker;
 				int ct_trail=0;
-				if(step_x_set[j]==0 && step_y_set[k]==0) continue;
+				if((step_x_set[j]==0 && step_y_set[k]==0) || (step_x_set[j]==-1 && step_y_set[k]==1) || (step_x_set[j]==1 && step_y_set[k]==-1) ) continue;
 				while(true){
 					int new_x = cur_rings[i].first+step_x_set[j];
 					int new_y = cur_rings[i].second+step_y_set[k];
@@ -602,13 +602,13 @@ float player::heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pa
 
 
 
-	w1 = 200000.0;
-	w2 = 1000000.0;
+	w1 = 2000000.0;
+	w2 = 100000000.0;
 	wt_ctg = 100;
 	// if (move_number>20){
-	w3 = 30.0;
+	w3 = 300.0;
 	w4 = 0;
-	w5 = 0;
+	w5 = 1000;
 	// }else{
 		// w3 = 30;
 		// w4 = 0;
@@ -679,7 +679,7 @@ float player::heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pa
 		}
 	}
 	// cerr<<"MY 3len trails"<<num_my_3len_trails<<endl;
-	return wt_ctg*my_dominance + num_my_ring_adjacent_trail - num_opp_ring_adjacent_trail + w1*num_opp_rings + w2*(num_rings - num_my_rings) + w3*(num_my_markers - num_opp_markers) + w4*num_my_3len_trails - w5*num_opp_3len_trails;
+	return wt_ctg*my_dominance + w5*(num_my_ring_adjacent_trail - num_opp_ring_adjacent_trail) + w1*num_opp_rings + w2*(num_rings - num_my_rings) + w3*(num_my_markers - num_opp_markers) + w4*(num_my_3len_trails - num_opp_3len_trails);
 }
 
 
@@ -945,7 +945,7 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 			if (num_rings_placed == num_rings) DEPTH_TO_CHECK = 2;
 
 			move_number++;
-			if(move_number>18) DEPTH_TO_CHECK = 3;
+			if(move_number>18) DEPTH_TO_CHECK = 2;
 			if(local_ring_pos.size()<=num_rings-2 && num_rings_placed>=num_rings) DEPTH_TO_CHECK =2;
 			//else if time is less than THRESHOLD then depth = 1
 		}else{
