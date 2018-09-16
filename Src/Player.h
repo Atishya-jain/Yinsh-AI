@@ -22,6 +22,7 @@ private:
 	int num_rings_removed;
 	int to_win_remove;
 
+	int move_number;
 	int DEPTH_TO_CHECK;
 public:
 	vector<pair<int,int>> my_ring_pos;
@@ -54,7 +55,7 @@ public:
 	void remove_ring(vector<vector<pos>>& board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<int,int>>& local_ring_pos, vector<int>& moves);
 	void remove_repeated_trails(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], pair<pair<int, int>, pair<int, int>>& pp, int dir);
 
-	float heuristic(vector<vector<pos>>& board);
+	float heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<pair<int, int>, pair<int, int>>> non_local_trails[3]);
 	pair<int,float> MinVal(vector<vector<pos>>& board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<pair<int, int>, pair<int, int>>> non_local_trails[3], int current_depth, float alpha, float beta, int rings_placed);
 	pair<int,float> MaxVal(vector<vector<pos>>& board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<pair<int, int>, pair<int, int>>> non_local_trails[3], int current_depth, float alpha, float beta, int rings_placed);
 
