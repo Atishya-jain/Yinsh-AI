@@ -76,7 +76,7 @@ void game::initialize_board(){
 
 void game::play(){
 	vector<pair<int,pair<pair<int,int>,pair<int,int>>>> moves;
-	my_player.make_next_move(board, my_player.my_ring_pos, my_player.my_trails, my_player.opp_trails, moves);
+	my_player.make_next_move(board, my_player.my_ring_pos, my_player.opp_ring_pos, my_player.my_trails, my_player.opp_trails, moves);
 	output(moves);
 }
 void game::my_coord_to_yinsh(pair<int, int>& ret_coord, int c, int v){
