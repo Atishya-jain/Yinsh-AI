@@ -60,6 +60,7 @@ public:
 	void remove_ring(vector<vector<pos>>& board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<int,int>>& local_ring_pos, vector<int>& moves);
 	void remove_repeated_trails(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], pair<pair<int, int>, pair<int, int>>& pp, int dir);
 
+	int check_ring_adjacent_empty(vector<vector<pos>>& board, vector<pair<int,int>>& cur_rings);
 	float check_dominance(vector<vector<pos>> board, int dir, int xc, int yc, float wt1, float wt2, float wt3, float wt4);
 	float check_ring_adjacent_trails(vector<vector<pos>>& board, vector<pair<int,int>>& cur_rings);
 	float heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pair<int, int>, pair<int, int>>> my_cur_trails[3], vector<pair<pair<int, int>, pair<int, int>>> opp_cur_trails[3],vector<pair<int,int>>& my_cur_rings, vector<pair<int,int>>& opp_cur_rings);

@@ -550,9 +550,12 @@ float player::check_ring_adjacent_trails(vector<vector<pos>>& board, vector<pair
 				int last_marker;
 				int ct_trail=0;
 				if((step_x_set[j]==0 && step_y_set[k]==0) || (step_x_set[j]==-1 && step_y_set[k]==1) || (step_x_set[j]==1 && step_y_set[k]==-1) ) continue;
+				int new_x = cur_rings[i].first+step_x_set[j];
+				int new_y = cur_rings[i].second+step_y_set[k];
 				while(true){
-					int new_x = cur_rings[i].first+step_x_set[j];
-					int new_y = cur_rings[i].second+step_y_set[k];
+					new_x +=step_x_set[j];
+					new_y +=step_y_set[k];
+
 					if(new_x<0 || new_x>board_size-1) break;
 					if(new_y<0 || new_y>board_size-1) break;
 
@@ -584,6 +587,39 @@ float player::check_ring_adjacent_trails(vector<vector<pos>>& board, vector<pair
 		}
 	}
 	return cur_trails;
+}
+int player::check_ring_adjacent_empty(vector<vector<pos>>& board, vector<pair<int,int>>& cur_rings){
+	int moves_avail = 0;
+	for(int i=0;i<cur_rings.size();i++){
+		vector<int> step_x_set;
+		vector<int> step_y_set;
+		step_x_set.push_back(-1);
+		step_x_set.push_back(0);
+		step_x_set.push_back(1);
+		step_y_set.push_back(-1);
+		step_y_set.push_back(0);
+		step_y_set.push_back(1);
+		for(int j=0;j<step_x_set.size();j++){
+			for(int k=0;k<step_y_set.size();k++){
+				int last_marker;
+				if((step_x_set[j]==0 && step_y_set[k]==0) || (step_x_set[j]==-1 && step_y_set[k]==1) || (step_x_set[j]==1 && step_y_set[k]==-1) ) continue;
+				int new_x = cur_rings[i].first+step_x_set[j];
+				int new_y = cur_rings[i].second+step_y_set[k];
+				while(true){
+				new_x += step_x_set[j];
+				new_y += step_y_set[k];
+					if(new_x<0 || new_x>board_size-1) break;
+					if(new_y<0 || new_y>board_size-1) break;
+
+					if(board[new_x][new_y].valid){
+						if(board[new_x][new_y].marker==2 && board[new_x][new_y].ring!=2)
+							moves_avail++;
+						else break;
+					}else break;
+				}
+			}
+		}
+	}
 
 }
 float player::heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pair<int, int>, pair<int, int>>> my_cur_trails[3], vector<pair<pair<int, int>, pair<int, int>>> opp_cur_trails[3],vector<pair<int,int>>& my_cur_rings, vector<pair<int,int>>& opp_cur_rings){
@@ -596,7 +632,10 @@ float player::heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pa
 	float num_my_ring_adjacent_trail=0;
 	float num_opp_ring_adjacent_trail=0;
 	float my_dominance = 0;
-	float w1, w2, w3, w4, w5, wt_ctg, val1_ctg, val2_ctg, val3_ctg, val4_ctg;
+	int num_my_free_moves=0;
+	int num_opp_free_moves=0;
+
+	float w1, w2, w3, w4, w5, wt_ctg, val1_ctg, val2_ctg, val3_ctg, val4_ctg, w6;
 	val1_ctg = 1;
 	val2_ctg = 10;
 	val3_ctg = 100;
@@ -607,16 +646,20 @@ float player::heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pa
 	w1 = 2000000.0;
 	w2 = 100000000.0;
 	wt_ctg = 100;
+	w6 = 300;
 	// if (move_number>20){
 	w3 = 300.0;
 	w4 = 0;
-	w5 = 1000;
+	w5 = 0;
 	// }else{
 		// w3 = 30;
 		// w4 = 0;
 	// }
 	num_my_ring_adjacent_trail = check_ring_adjacent_trails(board, my_cur_rings);
 	num_opp_ring_adjacent_trail = check_ring_adjacent_trails(board, opp_cur_rings);
+	num_my_free_moves = check_ring_adjacent_empty(board, my_cur_rings);
+	num_opp_free_moves = check_ring_adjacent_empty(board, opp_cur_rings);
+
 
 	
 
@@ -681,7 +724,7 @@ float player::heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pa
 		}
 	}
 	// cerr<<"MY 3len trails"<<num_my_3len_trails<<endl;
-	return wt_ctg*my_dominance + w5*(num_my_ring_adjacent_trail - num_opp_ring_adjacent_trail) + w1*num_opp_rings + w2*(num_rings - num_my_rings) + w3*(num_my_markers - num_opp_markers) + w4*(num_my_3len_trails - num_opp_3len_trails);
+	return w6*(num_my_free_moves - num_opp_free_moves) + wt_ctg*my_dominance + w5*(num_my_ring_adjacent_trail - num_opp_ring_adjacent_trail) + w1*(num_opp_rings - opp_cur_trails[0].size()-opp_cur_trails[1].size()-opp_cur_trails[2].size()) + w2*(num_rings - num_my_rings) + w3*(num_my_markers - num_opp_markers) + w4*(num_my_3len_trails - num_opp_3len_trails);
 }
 
 
