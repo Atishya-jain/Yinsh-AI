@@ -88,8 +88,8 @@ void game::my_coord_to_yinsh(pair<int, int>& ret_coord, int c, int v){
 	int h,p,x,y;
 	x = c-num_rings;
 	y = v-num_rings;
-	cerr << "x: " << x << endl;
-	cerr << "y: " << y << endl;
+	//cerr << "x: " << x << endl;
+	//cerr << "y: " << y << endl;
 
 	if(x*y<0){
 		h = abs(x)+abs(y);
@@ -155,9 +155,9 @@ void game::input(){
 	vector <string> splited;
 	splitString(s," ",splited);
 	int num_moves_in_input = splited.size()/3;
-	// cerr << "num_moves_in_input: " << splited.size() << endl;
-	cerr << "num_moves_in_input: " << num_moves_in_input << endl;
-	cerr << "Input Move:**************** " << s << endl;
+	// //cerr << "num_moves_in_input: " << splited.size() << endl;
+	//cerr << "num_moves_in_input: " << num_moves_in_input << endl;
+	//cerr << "Input Move:**************** " << s << endl;
 	string move_type;
 	int x1, y1, x2, y2, x3, y3;
 	int i = 0;
@@ -170,21 +170,21 @@ void game::input(){
 			yinsh_coord_to_my(my_coord, x1, y1);
 			my_player.update_board(board, my_player.opp_ring_pos, my_player.opp_trails, my_player.my_trails, 0, my_coord.first, my_coord.second, max_lim, max_lim, false);
 		}else if(move_type.compare("S") == 0){
-			cerr << "Start1\n";
+			//cerr << "Start1\n";
 			x1 = stoi(splited[3*i+1]);
 			y1 = stoi(splited[3*i+2]);	
 			yinsh_coord_to_my(my_coord, x1, y1);
-			cerr << "Start2\n";
+			//cerr << "Start2\n";
 			// move the ring
 			// cout << "Let's move it\n";
 			x2 = stoi(splited[3*i+4]);
 			y2 = stoi(splited[3*i+5]);
-			cerr  << "Conversion again starts\n";
+			//cerr  << "Conversion again starts\n";
 			yinsh_coord_to_my(my_coord2, x2, y2);
 			// cout << "Mine move coords: " << my_coord2.first << " " << my_coord2.second << endl;
-			cerr << "Move: " << endl;
+			//cerr << "Move: " << endl;
 			my_player.update_board(board, my_player.opp_ring_pos, my_player.opp_trails, my_player.my_trails, 1, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second, false);
-			cerr << "Move Done\n";
+			//cerr << "Move Done\n";
 			i++;
 		}else{
 			// remove markers
@@ -194,10 +194,10 @@ void game::input(){
 			x2 = stoi(splited[3*i+4]);
 			y2 = stoi(splited[3*i+5]);
 			yinsh_coord_to_my(my_coord2, x2, y2);
-			cerr << "Removal of markers start:\n";
+			//cerr << "Removal of markers start:\n";
 			my_player.update_board(board, my_player.opp_ring_pos, my_player.opp_trails, my_player.my_trails, 2, my_coord.first, my_coord.second, my_coord2.first, my_coord2.second, false);
 			pair<pair<int, int>, pair<int, int>> pp = make_pair(make_pair(my_coord.first,my_coord.second), make_pair(my_coord2.first,my_coord2.second));
-			cerr << "Repeated removal starts: \n";
+			//cerr << "Repeated removal starts: \n";
 			if(my_coord.second == my_coord2.second){
 				my_player.remove_repeated_trails(board, my_player.opp_ring_pos, my_player.opp_trails, pp, 0);
 			}else if(my_coord.first == my_coord2.first){
@@ -205,14 +205,14 @@ void game::input(){
 			}else{
 				my_player.remove_repeated_trails(board, my_player.opp_ring_pos, my_player.opp_trails, pp, 2);
 			}
-			cerr << "Repeated also finishes!!!\n";
+			//cerr << "Repeated also finishes!!!\n";
 			// remove ring
 			x1 = stoi(splited[3*i+7]);
 			y1 = stoi(splited[3*i+8]);
 			yinsh_coord_to_my(my_coord, x1, y1);
 
 			my_player.update_board(board, my_player.opp_ring_pos, my_player.opp_trails, my_player.my_trails, 3, my_coord.first, my_coord.second, max_lim, max_lim, false);
-			cerr << "Done this move\n";
+			//cerr << "Done this move\n";
 			i = i+2;
 		}	
 		i++;
@@ -245,7 +245,7 @@ void game::initial_input(){
 void game::output(vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& v){
 	string ans;
 	int len = v.size();
-	cerr << "Length of final output: " << len << endl;
+	//cerr << "Length of final output: " << len << endl;
 	pair <int, int> coords;
 
 	// my_coord_to_yinsh(coords, v[1], v[2]);

@@ -1,3 +1,3 @@
 #!/bin/bash
-./block_dominance
+./main50change
 exit 0

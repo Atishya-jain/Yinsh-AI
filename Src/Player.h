@@ -29,6 +29,11 @@ private:
 	clock_t time_used_up;
 	double time_left;
 	double full_time;
+
+	vector<vector<pos>> last_board;
+	
+	float w1, w2, w3, w4, w5, wt_ctg, w6;
+
 public:
 	vector<pair<int,int>> my_ring_pos;
 	vector<pair<int,int>> opp_ring_pos;
@@ -63,7 +68,7 @@ public:
 	int check_ring_adjacent_empty(vector<vector<pos>>& board, vector<pair<int,int>>& cur_rings);
 	float check_dominance(vector<vector<pos>> board, int dir, int xc, int yc, float wt1, float wt2, float wt3, float wt4);
 	float check_ring_adjacent_trails(vector<vector<pos>>& board, vector<pair<int,int>>& cur_rings);
-	float heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pair<int, int>, pair<int, int>>> my_cur_trails[3], vector<pair<pair<int, int>, pair<int, int>>> opp_cur_trails[3],vector<pair<int,int>>& my_cur_rings, vector<pair<int,int>>& opp_cur_rings);
+	vector<float> heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pair<int, int>, pair<int, int>>> my_cur_trails[3], vector<pair<pair<int, int>, pair<int, int>>> opp_cur_trails[3],vector<pair<int,int>>& my_cur_rings, vector<pair<int,int>>& opp_cur_rings);
 	// float heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<pair<int, int>, pair<int, int>>> non_local_trails[3]);
 	pair<int,float> MinVal(vector<vector<pos>>& board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<pair<int, int>, pair<int, int>>> non_local_trails[3], int current_depth, float alpha, float beta, int rings_placed);
 	pair<int,float> MaxVal(vector<vector<pos>>& board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<pair<int, int>, pair<int, int>>> non_local_trails[3], int current_depth, float alpha, float beta, int rings_placed);
