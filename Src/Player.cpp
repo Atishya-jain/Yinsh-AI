@@ -620,6 +620,7 @@ int player::check_ring_adjacent_empty(vector<vector<pos>>& board, vector<pair<in
 			}
 		}
 	}
+	return moves_avail;
 
 }
 float player::heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pair<int, int>, pair<int, int>>> my_cur_trails[3], vector<pair<pair<int, int>, pair<int, int>>> opp_cur_trails[3],vector<pair<int,int>>& my_cur_rings, vector<pair<int,int>>& opp_cur_rings){
@@ -648,7 +649,7 @@ float player::heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pa
 	wt_ctg = 100;
 	w6 = 300;
 	// if (move_number>20){
-	w3 = 300.0;
+	w3 = 400.0;
 	w4 = 0;
 	w5 = 0;
 	// }else{
@@ -670,45 +671,12 @@ float player::heuristic(vector<vector<pos>>& board, bool my_turn, vector<pair<pa
 			// vector<pair<pair<int, int>, pair<int, int>>> tmp_trails[3];
 			if(i == 0){
 				my_dominance += check_dominance(board, 0, i, j, val1_ctg, val2_ctg, val3_ctg, val4_ctg);
-				// trail_length = num_rings-1;
-				// check_my_trail(board, tmp_trails, i,j,0,true);
-				// num_my_3len_trails += tmp_trails[0].size() + tmp_trails[1].size() + tmp_trails[2].size();
-				// tmp_trails[0].clear();
-				// tmp_trails[1].clear();
-				// tmp_trails[2].clear();
-				// check_my_trail(board, tmp_trails, i,j,0,false);
-				// num_opp_3len_trails += tmp_trails[0].size() + tmp_trails[1].size() + tmp_trails[2].size();
-				// tmp_trails[0].clear();
-				// tmp_trails[1].clear();
-				// tmp_trails[2].clear();
 			}
 			if(j == 0){		
 				my_dominance += check_dominance(board, 1, i, j, val1_ctg, val2_ctg, val3_ctg, val4_ctg);
-				// trail_length = num_rings-1;
-				// check_my_trail(board, tmp_trails, i,j,1,true);
-				// num_my_3len_trails += tmp_trails[0].size() + tmp_trails[1].size() + tmp_trails[2].size();
-				// tmp_trails[0].clear();
-				// tmp_trails[1].clear();
-				// tmp_trails[2].clear();
-				// check_my_trail(board, tmp_trails, i,j,1,false);
-				// num_opp_3len_trails += tmp_trails[0].size() + tmp_trails[1].size() + tmp_trails[2].size();
-				// tmp_trails[0].clear();
-				// tmp_trails[1].clear();
-				// tmp_trails[2].clear();
 			}
 			if((i == 0) || (j == 0)){	
 				my_dominance += check_dominance(board, 2, i, j, val1_ctg, val2_ctg, val3_ctg, val4_ctg);
-				// trail_length = num_rings-1;
-				// check_my_trail(board, tmp_trails, i,j,2,true);
-				// num_my_3len_trails += tmp_trails[0].size() + tmp_trails[1].size() + tmp_trails[2].size();
-				// tmp_trails[0].clear();
-				// tmp_trails[1].clear();
-				// tmp_trails[2].clear();
-				// check_my_trail(board, tmp_trails, i,j,2,false);
-				// num_opp_3len_trails += tmp_trails[0].size() + tmp_trails[1].size() + tmp_trails[2].size();
-				// tmp_trails[0].clear();
-				// tmp_trails[1].clear();
-				// tmp_trails[2].clear();
 			}
 			// trail_length = orig_tl;
 

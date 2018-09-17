@@ -1,3 +1,3 @@
 #!/bin/bash
-./markers
+./block_dominance
 exit 0
