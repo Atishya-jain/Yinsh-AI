@@ -1,3 +1,3 @@
 #!/bin/bash
-./main50change
+./depth3
 exit 0

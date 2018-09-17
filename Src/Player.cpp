@@ -34,13 +34,25 @@ player::player(int numr, int idd, int tl, int win, clock_t tm, double ti){
 	start_time = tm;
 	full_time = ti;
 
-	w1 = 2000000.0;
+	w1 = 20000000.0;
 	w2 = 100000000.0;
-	w3 = 300.0;
 	w4 = 0;
-	w5 = 100;
-	w6 = 300;
-	wt_ctg = 100;
+	if(move_number<8){
+		w6 = 100;
+		w3 = 300;
+		w5 = 0;
+		wt_ctg = 300;
+	}else{
+		w6 = 0;
+		w3 = 200;
+		w5 = 0;
+		wt_ctg = 10;
+	}
+	// w3 = 300.0;
+	// w5 = 0;
+	// w6 = 0;
+	// wt_ctg = 300;
+
 	// w1 = 100000;
 	// w2 = 100000000;
 	// w3 = 100.0;
@@ -594,8 +606,8 @@ float player::check_ring_adjacent_trails(vector<vector<pos>>& board, vector<pair
 				int last_marker;
 				int ct_trail=0;
 				if((step_x_set[j]==0 && step_y_set[k]==0) || (step_x_set[j]==-1 && step_y_set[k]==1) || (step_x_set[j]==1 && step_y_set[k]==-1) ) continue;
-				int new_x = cur_rings[i].first+step_x_set[j];
-				int new_y = cur_rings[i].second+step_y_set[k];
+				int new_x = cur_rings[i].first;
+				int new_y = cur_rings[i].second;
 				while(true){
 					new_x +=step_x_set[j];
 					new_y +=step_y_set[k];
@@ -647,11 +659,11 @@ int player::check_ring_adjacent_empty(vector<vector<pos>>& board, vector<pair<in
 			for(int k=0;k<step_y_set.size();k++){
 				int last_marker;
 				if((step_x_set[j]==0 && step_y_set[k]==0) || (step_x_set[j]==-1 && step_y_set[k]==1) || (step_x_set[j]==1 && step_y_set[k]==-1) ) continue;
-				int new_x = cur_rings[i].first+step_x_set[j];
-				int new_y = cur_rings[i].second+step_y_set[k];
+				int new_x = cur_rings[i].first;
+				int new_y = cur_rings[i].second;
 				while(true){
-				new_x += step_x_set[j];
-				new_y += step_y_set[k];
+					new_x += step_x_set[j];
+					new_y += step_y_set[k];
 					if(new_x<0 || new_x>board_size-1) break;
 					if(new_y<0 || new_y>board_size-1) break;
 
@@ -680,7 +692,7 @@ vector<float> player::heuristic(vector<vector<pos>>& board, bool my_turn, vector
 	int num_my_free_moves=0;
 	int num_opp_free_moves=0;
 
-	float w1, w2, w3, w4, w5, wt_ctg, val1_ctg, val2_ctg, val3_ctg, val4_ctg, w6;
+	float val1_ctg, val2_ctg, val3_ctg, val4_ctg;
 	val1_ctg = 1;
 	val2_ctg = 10;
 	val3_ctg = 100;
@@ -918,13 +930,13 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 			if (num_rings_placed == num_rings) DEPTH_TO_CHECK = 2;
 
 			move_number++;
-			if(move_number>18) DEPTH_TO_CHECK = 3;
+			if(move_number>18) DEPTH_TO_CHECK = 2;
 			if(local_ring_pos.size()<=num_rings-2 && num_rings_placed>=num_rings) DEPTH_TO_CHECK =2;
 			if(time_left < 50) DEPTH_TO_CHECK=2;
 			if(time_left < 20) DEPTH_TO_CHECK=1;
 
 	float old_heuristic = w1*old_fi[0]+w2*old_fi[1]+w3*old_fi[2]+w4*old_fi[3]+w5*old_fi[4]+w6*old_fi[5]+wt_ctg*old_fi[6];
-			float to_change_by = 50.0;
+			float to_change_by = 5000.0;
 			if(new_heuristic - old_heuristic){
 				if(old_fi[0]>0) w1 += w1/to_change_by; 
 				else w1 -= w1/to_change_by;
