@@ -10,6 +10,7 @@
 #include <random>
 #include <cmath>
 #include "Player.h"
+#include <ctime>
 
 using namespace std;
 
@@ -29,10 +30,13 @@ private:
 	bool train; // Set to true if training is going on
 	player my_player;
 	string int_to_move[6];
+	clock_t start_time;
+	clock_t diff_time;
 	// 0 == P, 1 == S, 2 == M, 3 == RS, 4 == RE, 5 == X
 public:
 	// Constructors
 	game();
+	game(clock_t tm);
 	game(int n);
 	
 	// Initialize the board with no markers and rings

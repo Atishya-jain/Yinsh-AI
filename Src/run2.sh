@@ -1,3 +1,3 @@
 #!/bin/bash
-./main2
+./main_dom
 exit 0

@@ -8,6 +8,11 @@ game::game(){
 
 }
 
+game::game(clock_t tm){
+	start_time = tm;
+	diff_time = clock_t() - tm;
+}
+
 game::game(int n){
 	num_rings = n;
 	remove_win_rings = 3;
@@ -57,7 +62,7 @@ void game::initialize_board(){
 	board[0][0].setInvalid();
 	board[num_rings][l1-1].setInvalid();
 
-	my_player = player(num_rings, id, trail_length, remove_win_rings);
+	my_player = player(num_rings, id, trail_length, remove_win_rings, start_time, time_left);
 	int_to_move[0] = "P";
 	int_to_move[1] = "S";
 	int_to_move[2] = "M";
@@ -76,7 +81,7 @@ void game::initialize_board(){
 
 void game::play(){
 	vector<pair<int,pair<pair<int,int>,pair<int,int>>>> moves;
-	my_player.make_next_move(board, my_player.my_ring_pos, my_player.opp_ring_pos, my_player.my_trails, my_player.opp_trails, moves);
+	my_player.make_next_move(board, my_player.my_ring_pos, my_player.opp_ring_pos, my_player.my_trails, my_player.opp_trails, moves, diff_time);
 	output(moves);
 }
 void game::my_coord_to_yinsh(pair<int, int>& ret_coord, int c, int v){
@@ -139,9 +144,14 @@ void game::input(){
 	// 	my_player.my_trails[i].push_back(temp);
 	// }
 	////////////////////////////////////////////////////////////////////////////////////
-	
+	clock_t start_in = clock();
+
 	string s;
 	getline(cin, s);
+
+	clock_t end = clock();
+	diff_time += end-start_in;
+
 	vector <string> splited;
 	splitString(s," ",splited);
 	int num_moves_in_input = splited.size()/3;

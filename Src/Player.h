@@ -5,6 +5,7 @@
 #include <random>
 #include <algorithm>
 #include "struct.h"
+#include <ctime>
 using namespace std;
 
 class player
@@ -24,6 +25,10 @@ private:
 
 	int move_number;
 	int DEPTH_TO_CHECK;
+	clock_t start_time;
+	clock_t time_used_up;
+	double time_left;
+	double full_time;
 public:
 	vector<pair<int,int>> my_ring_pos;
 	vector<pair<int,int>> opp_ring_pos;
@@ -33,8 +38,8 @@ public:
 	// vector<pair<pair<int, int>, pair<int, int>>> opp_to_me[3];
 
 	player();
-	player(int numr, int idd, int tl, int win);
-	void make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<int,int>>& non_local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<pair<int, int>, pair<int, int>>> non_local_trails[3], vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& moves);
+	player(int numr, int idd, int tl, int win, clock_t tm, double total_time);
+	void make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<int,int>>& non_local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<pair<int, int>, pair<int, int>>> non_local_trails[3], vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& moves, clock_t diff_time);
 	// void place_rings(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& moves);
 	void place_rings(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& move);
 	
