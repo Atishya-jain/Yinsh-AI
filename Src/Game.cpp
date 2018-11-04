@@ -13,12 +13,6 @@ game::game(clock_t tm){
 	diff_time = clock_t() - tm;
 }
 
-game::game(int n){
-	num_rings = n;
-	remove_win_rings = 3;
-	trail_length = 5;
-}
-
 void game::initialize_board(){
 	// cout << "Let's Initialise board\n";
 	int l1 = 2*num_rings + 1;
@@ -224,23 +218,25 @@ void game::initial_input(){
 	getline(cin, s);
 	vector<string> splited;
 	
-	// cout << "Split started\n";
+	//cerr << "Split started\n";
 	splitString(s," ", splited);
-	// cout << "Split done\n";
+	//cerr << "Split done\n";
 	
-	// cout << "Size of splited array: " << splited.size() << endl;
+	cerr << "Size of splited array: " << splited.size() << endl;
 	id = stoi(splited[0]) - 1;
-	// cout << id << endl;
+	cerr << id << endl;
 	
 	num_rings = stoi(splited[1]);
-	// cout << num_rings << endl;
+	cerr << num_rings << endl;
 	
 	time_left = stoi(splited[2]);
-	// cout << time_left << endl;
+	cerr << time_left << endl;
 	
+	trail_length = stoi(splited[3]);
+	cerr << "trail_length: " << trail_length << endl; 
 	remove_win_rings = 3;
-	trail_length = 5;
-	// cout << "Initial Input done\n" << endl;
+	// trail_length = 5;
+	cerr << "Initial Input done\n" << endl;
 }
 void game::output(vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& v){
 	string ans;

@@ -37,7 +37,6 @@ public:
 	// Constructors
 	game();
 	game(clock_t tm);
-	game(int n);
 	
 	// Initialize the board with no markers and rings
 	void initialize_board();

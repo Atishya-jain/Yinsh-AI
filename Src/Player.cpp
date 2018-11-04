@@ -62,14 +62,14 @@ player::player(int numr, int idd, int tl, int win, clock_t tm, double ti){
 	// wt_ctg = 100;
 
 	//initialize last_board
-	for(int i=0;i<board_size;i++){
-		vector<pos> tmp;
-		for(int j=0;j<board_size;j++){
-			pos temp_pos(2, 2, true);
-			tmp.push_back(temp_pos);
-		}
-		last_board.push_back(tmp);
-	}
+	// for(int i=0;i<board_size;i++){
+	// 	vector<pos> tmp;
+	// 	for(int j=0;j<board_size;j++){
+	// 		pos temp_pos(2, 2, true);
+	// 		tmp.push_back(temp_pos);
+	// 	}
+	// 	last_board.push_back(tmp);
+	// }
 
 }
 
@@ -865,7 +865,7 @@ pair<int,float> player::MaxVal(vector<vector<pos>>& board, vector<pair<pair<int,
 
 		////cerr<<"before play_move: "<<move[s].second.size()<<endl;
 		play_move(board, move[s].second, temp_ring_pos, temp_trails, non_temp_trails, true);
-	// for (int s = 0; s<10; s++s in children(state)){ //CHANGE_THIS
+		// for (int s = 0; s<10; s++s in children(state)){ //CHANGE_THIS
 		if (current_depth == DEPTH_TO_CHECK-1 || move[s].first>=max_lim_p-1)
 			child = make_pair(s, move[s].first);
 		else{
