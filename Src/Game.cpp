@@ -8,7 +8,9 @@ game::game(){
 
 }
 
-game::game(clock_t tm){
+game::game(clock_t tm, string filename, string filename2){
+	wts_filename = filename2;
+	rd_wts_filename = filename;
 	start_time = tm;
 	diff_time = clock_t() - tm;
 }
@@ -56,7 +58,10 @@ void game::initialize_board(){
 	board[0][0].setInvalid();
 	board[num_rings][l1-1].setInvalid();
 
-	my_player = player(num_rings, id, trail_length, remove_win_rings, start_time, time_left);
+	// cout << "okay till here\n";
+	// my_player = player(num_rings, id, trail_length, remove_win_rings, start_time, time_left);
+	my_player = player(num_rings, id, trail_length, remove_win_rings, start_time, time_left, rd_wts_filename, wts_filename);
+	my_player.read_wts();
 	int_to_move[0] = "P";
 	int_to_move[1] = "S";
 	int_to_move[2] = "M";
@@ -222,7 +227,7 @@ void game::initial_input(){
 	splitString(s," ", splited);
 	//cerr << "Split done\n";
 	
-	cerr << "Size of splited array: " << splited.size() << endl;
+	// cerr << "Size of splited array: " << splited.size() << endl;
 	id = stoi(splited[0]) - 1;
 	cerr << id << endl;
 	
@@ -233,10 +238,10 @@ void game::initial_input(){
 	cerr << time_left << endl;
 	
 	trail_length = stoi(splited[3]);
-	cerr << "trail_length: " << trail_length << endl; 
+	// cerr << "trail_length: " << trail_length << endl; 
 	remove_win_rings = 3;
 	// trail_length = 5;
-	cerr << "Initial Input done\n" << endl;
+	// cerr << "Initial Input done\n" << endl;
 }
 void game::output(vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& v){
 	string ans;

@@ -5,6 +5,7 @@
 #include <random>
 #include <algorithm>
 #include "struct.h"
+#include<fstream>
 #include <ctime>
 using namespace std;
 
@@ -32,8 +33,12 @@ private:
 
 	vector<vector<pos>> last_board;
 	
-	float w1, w2, w3, w4, w5, wt_ctg, w6;
-
+	float prev_reward;
+	float curr_reward;
+	vector <float> wt;
+	float GAM = 0.99;
+	float ALP = 0.01;
+	string rd_wt_filename, wt_filename;
 public:
 	vector<pair<int,int>> my_ring_pos;
 	vector<pair<int,int>> opp_ring_pos;
@@ -44,6 +49,7 @@ public:
 
 	player();
 	player(int numr, int idd, int tl, int win, clock_t tm, double total_time);
+	player(int numr, int idd, int tl, int win, clock_t tm, double total_time, string filename, string filename2);
 	void make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<int,int>>& non_local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<pair<int, int>, pair<int, int>>> non_local_trails[3], vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& moves, clock_t diff_time);
 	// void place_rings(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& moves);
 	void place_rings(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& move);
@@ -80,6 +86,12 @@ public:
 	void play(vector<vector<pos>>& local_board, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<pair<int, int>, pair<int, int>>> non_local_trails[3], vector<pair<int,int>>& local_ring_pos, vector<pair<int,int>>& non_local_ring_pos, vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& move, int ring_index, pair<int,pair<int,int>> valid_moves, bool my_turn, int& num_moves);
 	void play_move(vector<vector<pos>>& local_board, vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& moves, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<pair<int, int>, pair<int, int>>> non_local_trails[3], bool my_turn);
 
+//---------------------------- Learning --------------------------------//
+//	void Q_learning();
+	void read_wts();
+	void write_wts();
+	void reward(vector<vector<pos>>& board, vector<pair<pair<int, int>, pair<int, int>>> my_cur_trails[3], vector<pair<pair<int, int>, pair<int, int>>> opp_cur_trails[3],vector<pair<int,int>>& my_cur_rings, vector<pair<int,int>>& opp_cur_rings);
+	void wt_update(vector <float> &fut_h, vector <float> &loc_h);
 };
 
 #endif

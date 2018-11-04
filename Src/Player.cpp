@@ -14,7 +14,6 @@ static bool sortinrev(const pair<float,vector<pair<int, pair<pair<int,int>,pair<
 player::player(){
 
 }
-
 player::player(int numr, int idd, int tl, int win, clock_t tm, double ti){
 	num_rings_placed = 0;
 	num_rings_removed = 0;
@@ -33,21 +32,106 @@ player::player(int numr, int idd, int tl, int win, clock_t tm, double ti){
 	move_number = 0;
 	start_time = tm;
 	full_time = ti;
+	// w1, w2, w3, w4, w5, wt_ctg, w6;
+	wt.push_back(100);
+	wt.push_back(100);
+	wt.push_back(100);
+	wt.push_back(100);
+	wt.push_back(100);
+	wt.push_back(100);
+	wt.push_back(100);
+	prev_reward = -1;
+	curr_reward = -1;
+	
+	// w1 = 20000000.0;
+	// w2 = 100000000.0;
+	// w4 = 0;
+	// if(move_number<8){
+	// 	w6 = 10;
+	// 	w3 = 300;
+	// 	w5 = 50;
+	// 	wt_ctg = 300;
+	// }else{
+	// 	w6 = 0;
+	// 	w3 = 200;
+	// 	w5 = 0;
+	// 	wt_ctg = 10;
+	// }
 
-	w1 = 20000000.0;
-	w2 = 100000000.0;
-	w4 = 0;
-	if(move_number<8){
-		w6 = 10;
-		w3 = 300;
-		w5 = 50;
-		wt_ctg = 300;
-	}else{
-		w6 = 0;
-		w3 = 200;
-		w5 = 0;
-		wt_ctg = 10;
-	}
+
+	// w3 = 300.0;
+	// w5 = 0;
+	// w6 = 0;
+	// wt_ctg = 300;
+
+	// w1 = 100000;
+	// w2 = 100000000;
+	// w3 = 100.0;
+	// w4 = 100;
+	// w5 = 100;
+	// w6 = 100;
+	// wt_ctg = 100;
+
+	//initialize last_board
+	// for(int i=0;i<board_size;i++){
+	// 	vector<pos> tmp;
+	// 	for(int j=0;j<board_size;j++){
+	// 		pos temp_pos(2, 2, true);
+	// 		tmp.push_back(temp_pos);
+	// 	}
+	// 	last_board.push_back(tmp);
+	// }
+
+}
+
+player::player(int numr, int idd, int tl, int win, clock_t tm, double ti, string filename, string filename2){
+	rd_wt_filename = filename + ".txt";
+	wt_filename = filename2 + ".txt";
+
+	num_rings_placed = 0;
+	num_rings_removed = 0;
+	num_rings = numr;
+	DEPTH_TO_CHECK = 1;
+	id = idd;
+	trail_length = tl;
+	to_win_remove = win;
+	board_size = 2*numr+1;
+	my_trails[0].clear();
+	my_trails[1].clear();
+	my_trails[2].clear();
+	opp_trails[0].clear();
+	opp_trails[1].clear();
+	opp_trails[2].clear();
+	move_number = 0;
+	start_time = tm;
+	full_time = ti;
+	// w1, w2, w3, w4, w5, wt_ctg, w6;
+	wt.push_back(100);
+	wt.push_back(100);
+	wt.push_back(100);
+	wt.push_back(100);
+	wt.push_back(100);
+	wt.push_back(100);
+	wt.push_back(100);
+	prev_reward = -1;
+	curr_reward = -1;
+	
+	// w1 = 20000000.0;
+	// w2 = 100000000.0;
+	// w4 = 0;
+	// if(move_number<8){
+	// 	w6 = 10;
+	// 	w3 = 300;
+	// 	w5 = 50;
+	// 	wt_ctg = 300;
+	// }else{
+	// 	w6 = 0;
+	// 	w3 = 200;
+	// 	w5 = 0;
+	// 	wt_ctg = 10;
+	// }
+
+
 	// w3 = 300.0;
 	// w5 = 0;
 	// w6 = 0;
@@ -228,12 +312,12 @@ void player::get_neighbours(bool ascending, vector<vector<pos>> local_board, vec
 					if(my_turn){
 						vector<float> fi;
 						fi = heuristic(local_board, my_turn, local_trails, non_local_trails, local_ring_pos, non_local_ring_pos);
-						h = w1*fi[0]+w2*fi[1]+w3*fi[2]+w4*fi[3]+w5*fi[4]+w6*fi[5]+wt_ctg*fi[6];
+						h = wt[0]*fi[0]+wt[1]*fi[1]+wt[2]*fi[2]+wt[3]*fi[3]+wt[4]*fi[4]+wt[5]*fi[5]+wt[6]*fi[6];
 					}
 					else{
 						vector<float> fi;
 						fi = heuristic(local_board, my_turn, local_trails, non_local_trails, local_ring_pos, non_local_ring_pos);
-						h = w1*fi[0]+w2*fi[1]+w3*fi[2]+w4*fi[3]+w5*fi[4]+w6*fi[5]+wt_ctg*fi[6];
+						h = wt[0]*fi[0]+wt[1]*fi[1]+wt[2]*fi[2]+wt[3]*fi[3]+wt[4]*fi[4]+wt[5]*fi[5]+wt[6]*fi[6];
 					}
 				}
 				move.push_back(make_pair(h, valid_removes[i]));	
@@ -421,12 +505,12 @@ void player::play(vector<vector<pos>>& local_board, vector<pair<pair<int, int>, 
 				if(my_turn){
 					vector<float> fi;
 					fi = heuristic(local_board, my_turn, local_trails, non_local_trails, local_ring_pos, non_local_ring_pos);
-					h = w1*fi[0]+w2*fi[1]+w3*fi[2]+w4*fi[3]+w5*fi[4]+w6*fi[5]+wt_ctg*fi[6];
+					h = wt[0]*fi[0]+wt[1]*fi[1]+wt[2]*fi[2]+wt[3]*fi[3]+wt[4]*fi[4]+wt[5]*fi[5]+wt[6]*fi[6];
 				}
 				else{
 					vector<float> fi;
 					fi = heuristic(local_board, my_turn, local_trails, non_local_trails, local_ring_pos, non_local_ring_pos);
-					h = w1*fi[0]+w2*fi[1]+w3*fi[2]+w4*fi[3]+w5*fi[4]+w6*fi[5]+wt_ctg*fi[6];
+					h = wt[0]*fi[0]+wt[1]*fi[1]+wt[2]*fi[2]+wt[3]*fi[3]+wt[4]*fi[4]+wt[5]*fi[5]+wt[6]*fi[6];
 				}
 			}
 			move.push_back(make_pair(h, temp2));
@@ -451,12 +535,12 @@ void player::play(vector<vector<pos>>& local_board, vector<pair<pair<int, int>, 
 			if(my_turn){
 					vector<float> fi;
 					fi = heuristic(local_board, my_turn, local_trails, non_local_trails, local_ring_pos, non_local_ring_pos);
-					h = w1*fi[0]+w2*fi[1]+w3*fi[2]+w4*fi[3]+w5*fi[4]+w6*fi[5]+wt_ctg*fi[6];
+					h = wt[0]*fi[0]+wt[1]*fi[1]+wt[2]*fi[2]+wt[3]*fi[3]+wt[4]*fi[4]+wt[5]*fi[5]+wt[6]*fi[6];
 			}
 			else{
 				vector<float> fi;
 				fi = heuristic(local_board, my_turn, local_trails, non_local_trails, local_ring_pos, non_local_ring_pos);
-				h = w1*fi[0]+w2*fi[1]+w3*fi[2]+w4*fi[3]+w5*fi[4]+w6*fi[5]+wt_ctg*fi[6];
+				h = wt[0]*fi[0]+wt[1]*fi[1]+wt[2]*fi[2]+wt[3]*fi[3]+wt[4]*fi[4]+wt[5]*fi[5]+wt[6]*fi[6];
 			}
 
 			move.push_back(make_pair(h, temp));
@@ -693,10 +777,10 @@ vector<float> player::heuristic(vector<vector<pos>>& board, bool my_turn, vector
 	int num_opp_free_moves=0;
 
 	float val1_ctg, val2_ctg, val3_ctg, val4_ctg;
-	val1_ctg = 1;
-	val2_ctg = 10;
-	val3_ctg = 100;
-	val4_ctg = 10000;
+	val1_ctg = 0.001;
+	val2_ctg = 0.01;
+	val3_ctg = 0.1;
+	val4_ctg = 1;
 
 
 
@@ -745,11 +829,11 @@ vector<float> player::heuristic(vector<vector<pos>>& board, bool my_turn, vector
 	}
 	// //cerr<<"MY 3len trails"<<num_my_3len_trails<<endl;
 	vector<float> to_return;
-	to_return.push_back(num_opp_rings - opp_cur_trails[0].size()-opp_cur_trails[1].size()-opp_cur_trails[2].size());
-	to_return.push_back(num_rings - num_my_rings);
-	to_return.push_back(num_my_markers - num_opp_markers);
+	to_return.push_back((num_opp_rings - opp_cur_trails[0].size()-opp_cur_trails[1].size()-opp_cur_trails[2].size())/3);
+	to_return.push_back((num_rings - num_my_rings)/3);
+	to_return.push_back((num_my_markers - num_opp_markers)/10);
 	to_return.push_back(num_my_3len_trails - num_opp_3len_trails);
-	to_return.push_back(num_my_ring_adjacent_trail - num_opp_ring_adjacent_trail);
+	to_return.push_back((num_my_ring_adjacent_trail - num_opp_ring_adjacent_trail)/10000);
 	to_return.push_back(num_my_free_moves - num_opp_free_moves);
 	to_return.push_back(my_dominance);
 
@@ -898,7 +982,7 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 	// vector<float> old_fi = heuristic(last_board, true, local_trails, non_local_trails, local_ring_pos, non_local_ring_pos);
 	// float old_heuristic = w1*old_fi[0]+w2*old_fi[1]+w3*old_fi[2]+w4*old_fi[3]+w5*old_fi[4]+w6*old_fi[5]+wt_ctg*old_fi[6];
 
-	//cerr<<"TRYING TO MAKE NEXT MOVE"<<endl;
+	cerr<<"TRYING TO MAKE NEXT MOVE"<<endl;
 	clock_t curr = clock();
 	time_used_up = (curr - start_time - diff_time);
 	double elapsed_secs = time_used_up/CLOCKS_PER_SEC;
@@ -906,30 +990,48 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 	if(time_left < 50) DEPTH_TO_CHECK=2;
 	if(time_left < 20) DEPTH_TO_CHECK=1;
 	if(time_left < 5) DEPTH_TO_CHECK=0;
+	bool play_started;
 	// cerr << "Time left: " << time_left << endl;
 	// //cerr << "curr: " << curr << endl;
 	// //cerr << "used up: " << time_used_up << endl;
 	// //cerr << "elapsed: " << elapsed_secs << endl;
 	// //cerr << "full time: " << full_time << endl;
 	//cerr << "Time Left: " << time_left << endl;
-	
-		vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>> move;
+		
+	vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>> move;
 
-	
-		if (num_rings_placed >= num_rings)
-			get_neighbours(false, board, local_ring_pos, non_local_ring_pos, local_trails, non_local_trails, move, true);
-		else
-			place_rings(board, local_ring_pos, local_trails, move);
+	vector<float> loc_h, fut_h;
+	if (num_rings_placed >= num_rings){
+		get_neighbours(false, board, local_ring_pos, non_local_ring_pos, local_trails, non_local_trails, move, true);
+		reward(board, local_trails, non_local_trails, local_ring_pos, non_local_ring_pos);
+		loc_h = heuristic(board, true, local_trails, non_local_trails, local_ring_pos, non_local_ring_pos);
+		play_started = true;
+	}
+	else{
+		place_rings(board, local_ring_pos, local_trails, move);
+		play_started = false;
+	}
 
 		// int best_move_index = 0;
 		int best_move_index;
 		// float new_heuristic = return_move.second;
-	
+		cerr << "AGAIN: " << num_rings_placed << " " << num_rings << " " << move.size() << endl;	
 		if(move.size() > 0 && best_move_index>=0 && DEPTH_TO_CHECK > 0){
+		cerr << "MAX_VAL\n";	
 			pair<int, float> return_move = MaxVal(board, local_trails, non_local_trails, 0, min_lim_p, max_lim_p, num_rings_placed);
 			best_move_index = return_move.first;
-	
+
 			play_move(board, move[best_move_index].second, local_ring_pos, local_trails, non_local_trails, true);
+			
+			if(play_started){
+				cerr << "Hope it's in here\n";
+				fut_h = heuristic(board, true, local_trails, non_local_trails, local_ring_pos, non_local_ring_pos);
+				cerr << "Q val calculated\n";
+				wt_update(fut_h, loc_h);
+				cerr << "Hope it's out of here\n";
+
+			}
+			
 			out = move[best_move_index].second;
 
 			if (num_rings_placed < num_rings) num_rings_placed++;
@@ -940,6 +1042,10 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 			if(local_ring_pos.size()<=num_rings-2 && num_rings_placed>=num_rings) DEPTH_TO_CHECK =2;
 		}else if(move.size() > 0 && best_move_index>=0 && DEPTH_TO_CHECK == 0){
 			play_move(board, move[0].second, local_ring_pos, local_trails, non_local_trails, true);
+			if(play_started){
+				fut_h = heuristic(board, true, local_trails, non_local_trails, local_ring_pos, non_local_ring_pos);
+				wt_update(fut_h, loc_h);
+			}
 			out = move[0].second;
 			if (num_rings_placed < num_rings) num_rings_placed++;
 		}else{
@@ -947,6 +1053,7 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 				;
 			}
 		}
+	
 	// float old_heuristic = w1*old_fi[0]+w2*old_fi[1]+w3*old_fi[2]+w4*old_fi[3]+w5*old_fi[4]+w6*old_fi[5]+wt_ctg*old_fi[6];
 	// 		float to_change_by = 5000.0;
 	// 		if(new_heuristic - old_heuristic){

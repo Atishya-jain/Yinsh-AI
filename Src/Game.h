@@ -32,11 +32,14 @@ private:
 	string int_to_move[6];
 	clock_t start_time;
 	clock_t diff_time;
+	string wts_filename, rd_wts_filename;
 	// 0 == P, 1 == S, 2 == M, 3 == RS, 4 == RE, 5 == X
 public:
 	// Constructors
 	game();
+	// game(string filename);
 	game(clock_t tm);
+	game(clock_t tm, string filename, string filename2);
 	
 	// Initialize the board with no markers and rings
 	void initialize_board();
