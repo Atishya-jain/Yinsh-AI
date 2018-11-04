@@ -85,8 +85,8 @@ player::player(int numr, int idd, int tl, int win, clock_t tm, double ti){
 }
 
 player::player(int numr, int idd, int tl, int win, clock_t tm, double ti, string filename, string filename2){
-	rd_wt_filename = filename + ".txt";
-	wt_filename = filename2 + ".txt";
+	rd_wt_filename = "weights/"+filename ;
+	wt_filename = "weights/"+filename2 ;
 
 	num_rings_placed = 0;
 	num_rings_removed = 0;

@@ -26,6 +26,7 @@ void player::read_wts(){
 void player::write_wts(){
 	if(wt_filename != "null"){
 		ofstream outfile1(wt_filename.c_str());
+		// cerr<<wt_filename<<"********************"<<endl;
 		if(!(outfile1).is_open()){
 	        cout << "There is no such output file" << "\n";
 	        exit(3);
@@ -69,7 +70,7 @@ void player::wt_update(vector <float> &fut_h, vector <float> &loc_h){
 	for(int i = 0; i<wt.size(); i++){
 		Q_fut += (wt[i]*fut_h[i]);
 		Q_loc += (wt[i]*loc_h[i]);
-		cerr << fut_h[i] << " ";
+		cerr << wt[i] << " ";
 	}cerr << endl;
 	for(int i = 0;i < wt.size(); i++){
 		wt[i] = wt[i] + ALP*(curr_reward + GAM*Q_fut - Q_loc)*loc_h[i];
