@@ -1,3 +1,3 @@
 #!/bin/bash
-./depth3
+./rajas_d3
 exit 0

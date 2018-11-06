@@ -1,0 +1,3 @@
+#!/bin/bash
+./main_try2 62 null
+exit 0

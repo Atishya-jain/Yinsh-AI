@@ -1,3 +1,3 @@
 #!/bin/bash
-./main 1 2
+./main_static 42 null
 exit 0
