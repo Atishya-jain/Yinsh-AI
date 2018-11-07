@@ -92,6 +92,7 @@ public:
 	void write_wts();
 	void reward(vector<vector<pos>>& board, vector<pair<pair<int, int>, pair<int, int>>> my_cur_trails[3], vector<pair<pair<int, int>, pair<int, int>>> opp_cur_trails[3],vector<pair<int,int>>& my_cur_rings, vector<pair<int,int>>& opp_cur_rings);
 	void wt_update(vector <float> &fut_h, vector <float> &loc_h);
+	float roll_outs(int cou, vector<vector<pos>>& board, vector<pair<pair<int, int>, pair<int, int>>> my_cur_trails[3], vector<pair<pair<int, int>, pair<int, int>>> opp_cur_trails[3], bool turn);
 };
 
 #endif
