@@ -1039,7 +1039,7 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 
 			move_number++;
 			if(move_number>18) DEPTH_TO_CHECK = 2;
-			if(local_ring_pos.size()<=num_rings-2 && num_rings_placed>=num_rings) DEPTH_TO_CHECK =2;
+			if(local_ring_pos.size()<=num_rings-2 && num_rings_placed>=num_rings) DEPTH_TO_CHECK = 2;
 		}else if(move.size() > 0 && best_move_index>=0 && DEPTH_TO_CHECK == 0){
 			play_move(board, move[0].second, local_ring_pos, local_trails, non_local_trails, true);
 			if(play_started){

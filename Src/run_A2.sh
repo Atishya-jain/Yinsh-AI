@@ -1,3 +1,3 @@
 #!/bin/bash
-./rajas_d3
+./main_A2
 exit 0
