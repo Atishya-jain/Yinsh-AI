@@ -604,6 +604,7 @@ float player::check_dominance(vector<vector<pos>> board, int dir, int xc, int yc
 	return wt1*(num_my_1 - num_opp_1) + wt2*(num_my_2 - num_opp_2) + wt3*(num_my_3 - num_opp_3) + wt4*(num_my_4 - num_opp_4) + wt5*(num_my_5 - num_opp_5);
 }
 float player::check_ring_adjacent_trails(vector<vector<pos>>& board, vector<pair<int,int>>& cur_rings){
+	int my_turn = board[cur_rings[0].first][cur_rings[0].second].ring;
 	float cur_trails=0;
 	for(int i=0;i<cur_rings.size();i++){
 		vector<int> step_x_set;
@@ -628,12 +629,12 @@ float player::check_ring_adjacent_trails(vector<vector<pos>>& board, vector<pair
 					if(new_x<0 || new_x>board_size-1) break;
 					if(new_y<0 || new_y>board_size-1) break;
 
-					if(board[new_x][new_y].valid){
+					if(board[new_x][new_y].valid && (board[new_x][new_y].marker == my_turn)){
 						if(ct_trail==0){
 							ct_trail++;
 							last_marker = board[new_x][new_y].marker;
 						}
-						else if(ct_trail==4){
+						else if(ct_trail==5){
 							cur_trails+=pow(10,ct_trail-1);
 							break;
 						}
@@ -646,10 +647,13 @@ float player::check_ring_adjacent_trails(vector<vector<pos>>& board, vector<pair
 							}
 						}
 					}else {
-						if (ct_trail>0)
+						if (ct_trail>0){
 							cur_trails+=pow(10,ct_trail-1);
-						else
 							break;
+						}
+						else{
+							break;
+						}
 					}
 				}
 			}
@@ -724,8 +728,12 @@ vector<float> player::heuristic(vector<vector<pos>>& board, bool my_turn, vector
 
 	num_my_ring_adjacent_trail = check_ring_adjacent_trails(board, my_cur_rings);
 	num_opp_ring_adjacent_trail = check_ring_adjacent_trails(board, opp_cur_rings);
-	num_my_free_moves = check_ring_adjacent_empty(board, my_cur_rings);
-	num_opp_free_moves = check_ring_adjacent_empty(board, opp_cur_rings);
+	// num_my_free_moves = check_ring_adjacent_empty(board, my_cur_rings);
+	// num_opp_free_moves = check_ring_adjacent_empty(board, opp_cur_rings);
+	// num_my_ring_adjacent_trail = 0;
+	// num_opp_ring_adjacent_trail = 0;
+	num_my_free_moves = 0;
+	num_opp_free_moves = 0;
 
 
 	
@@ -789,6 +797,8 @@ pair<int,float> player::MinVal(vector<vector<pos>>& board, vector<pair<pair<int,
 		place_rings(board, opp_ring_pos, local_trails, move);
 
 
+	// cerr << "MIN_Depth: " << current_depth << endl;
+	// clock_t start = clock();
 	for(int s=0;s<move.size();s++){
 // void player::play_move(vector<vector<pos>>& local_board, vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& moves, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], bool my_turn){
 		vector<pair<pair<int, int>, pair<int, int>>> temp_trails[3];
@@ -824,6 +834,8 @@ pair<int,float> player::MinVal(vector<vector<pos>>& board, vector<pair<pair<int,
 			best_child.second = child.second;
 		}
 	}
+	// double end_time = (clock() - start)/1000;
+	// cerr << "End MIN loop: " << end_time << endl;
 	return best_child; 
 	// if (current_depth == DEPTH_TO_CHECK)
 
@@ -860,7 +872,8 @@ pair<int,float> player::MaxVal(vector<vector<pos>>& board, vector<pair<pair<int,
 // void player::place_rings(vector<vector<pos>>& board, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>>& move){
 		place_rings(board, my_ring_pos, local_trails, move);
 
-
+	// cerr << "MAX_Depth: " << current_depth << endl;
+	// clock_t start = clock();
 	for(int s=0;s<move.size();s++){
 // void player::play_move(vector<vector<pos>>& local_board, vector<pair<int,pair<pair<int,int>,pair<int,int>>>>& moves, vector<pair<int,int>>& local_ring_pos, vector<pair<pair<int, int>, pair<int, int>>> local_trails[3], bool my_turn){
 		vector<pair<pair<int, int>, pair<int, int>>> temp_trails[3];
@@ -899,6 +912,9 @@ pair<int,float> player::MaxVal(vector<vector<pos>>& board, vector<pair<pair<int,
 			best_child.second = child.second;
 		}
 	}
+	// double end_time = (clock() - start)/1000;
+	// cerr << "End MAX loop: " << end_time << endl;
+
 	return best_child; 
 }
 
@@ -917,7 +933,7 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 	time_used_up = (curr - start_time - diff_time);
 	double elapsed_secs = time_used_up/CLOCKS_PER_SEC;
 	time_left = full_time - elapsed_secs;
-	if(time_left < 50) DEPTH_TO_CHECK=2;
+	if(time_left < 50) DEPTH_TO_CHECK=3;
 	if(time_left < 20) DEPTH_TO_CHECK=1;
 	if(time_left < 5) DEPTH_TO_CHECK=0;
 	// cerr << "Time left: " << time_left << endl;
@@ -930,17 +946,28 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 		vector<pair<float, vector<pair<int, pair<pair<int,int>,pair<int,int>>>>>> move;
 
 	
-		if (num_rings_placed >= num_rings)
+		if (num_rings_placed >= num_rings){
+			clock_t start = clock();
 			get_neighbours(false, board, local_ring_pos, non_local_ring_pos, local_trails, non_local_trails, move, true);
-		else
+			clock_t end = clock();
+			double test_1 = (end - start)/1000;
+			cerr << "Time in get neighbours: "<< test_1 << endl;
+			cerr << "Size of get neighbours: "<< move.size() << endl;
+		}else{
 			place_rings(board, local_ring_pos, local_trails, move);
+		}
 
 		// int best_move_index = 0;
 		int best_move_index;
 		// float new_heuristic = return_move.second;
 	
 		if(move.size() > 0 && best_move_index>=0 && DEPTH_TO_CHECK > 0){
+			clock_t start = clock();
 			pair<int, float> return_move = MaxVal(board, local_trails, non_local_trails, 0, min_lim_p, max_lim_p, num_rings_placed);
+			clock_t end = clock();
+			double test_1 = (end - start)/1000;
+			cerr << "Time in Max val: "<< test_1 << endl;
+			// cerr << "Size of get neighbours: "<< move.size() << endl;
 			best_move_index = return_move.first;
 	
 			play_move(board, move[best_move_index].second, local_ring_pos, local_trails, non_local_trails, true);
@@ -950,8 +977,11 @@ void player::make_next_move(vector<vector<pos>>& board, vector<pair<int,int>>& l
 			if (num_rings_placed == num_rings) DEPTH_TO_CHECK = 2;
 
 			move_number++;
-			if(move_number>18 && move_number < 30) DEPTH_TO_CHECK = 3;
-			if(move_number>=30) DEPTH_TO_CHECK = 4;
+			cerr << "move_number: " << move_number << endl;
+			if(move_number>8 && move_number < 13) DEPTH_TO_CHECK = 3;
+			if(move_number>=13 && move_number < 24) DEPTH_TO_CHECK = 4;
+			if(move_number>=24 && move_number < 28) DEPTH_TO_CHECK = 3;
+			if(move_number>=28) DEPTH_TO_CHECK = 2;
 			if(local_ring_pos.size()<=num_rings-2 && num_rings_placed>=num_rings) DEPTH_TO_CHECK =4;
 		}else if(move.size() > 0 && best_move_index>=0 && DEPTH_TO_CHECK == 0){
 			play_move(board, move[0].second, local_ring_pos, local_trails, non_local_trails, true);
